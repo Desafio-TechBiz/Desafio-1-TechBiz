@@ -28,5 +28,7 @@ Propomos uma ferramenta inovadora para análise de vínculos, com o objetivo de 
 
 ### 3. Assistente Investigador com IA
 
-**Interação usando Linguagem Natural:** O assistente interage com o usuário em linguagem natural, respondendo a perguntas sobre o grafo, como "Quais são as conexões mais fortes desta pessoa?" ou "Que outros indivíduos estão envolvidos em atividades semelhantes?".
+**Interação usando Linguagem Natural:** O assistente interage com o usuário em linguagem natural, respondendo a perguntas sobre a Entidade investigada, como "Quais são as conexões mais fortes desta pessoa?" ou "Que outros indivíduos estão envolvidos em atividades semelhantes?".
 
+## Conclusão
+A nossa ferramenta de visualização inteligente de dados para análise de vínculos representa um avanço significativo na forma como os investigadores interagem com dados complexos. Ao combinar uma interface visual dinâmica e adaptativa com menus contextuais inteligentes e um assistente virtual investigador, proporcionamos uma experiência de investigação mais intuitiva e eficiente. 
