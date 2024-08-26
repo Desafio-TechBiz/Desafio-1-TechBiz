@@ -1,0 +1,61 @@
+/* src/index.css */
+
+/* Reset básico para garantir consistência entre navegadores */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Definição de estilos globais */
+  html, body {
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(180deg, #282A36 0%, #5C66A2 100%);
+    color: #fff;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Estilos para links */
+  a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Definição de containers principais */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  /* Estilo padrão para títulos */
+  h1, h2, h3, h4, h5, h6 {
+    margin: 20px 0;
+    font-weight: 600;
+    color: #222;
+  }
+  
+  /* Estilo padrão para botões */
+  button {
+    font-family: 'Roboto', sans-serif;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  
