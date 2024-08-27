@@ -5,7 +5,7 @@ import { LightMode, DarkMode } from '@mui/icons-material';
 // import { lightTheme, darkTheme } from '../theme';
 
 const ThemeSwitcher = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   const handleThemeChange = (event) => {
     setIsDarkMode(event.target.checked);
@@ -35,7 +35,7 @@ const ThemeSwitcher = () => {
             }}
           />
         }
-        label={isDarkMode ? <DarkMode /> : <LightMode />}
+        // label={isDarkMode ? <DarkMode /> : <LightMode />}
         labelPlacement="start"
         sx={{
           '& .MuiFormControlLabel-label': {

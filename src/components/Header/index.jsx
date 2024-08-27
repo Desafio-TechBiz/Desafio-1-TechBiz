@@ -3,13 +3,17 @@ import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import NewInvestigationButton from "../Buttons/NewInvestigationButton.js"
 import ThemeToggleButton from "../Buttons/ThemeToggleButton.js" 
+import MenuEntities from "../MenuEntities"
+
 
 export const CustomAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.secondary.main,
-  boxShadow: 0.2, 
+  boxShadow: '1',// 
   height: 70, 
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignContent: 'center'
 }));
-
 
 
 const Header = () => {
@@ -19,8 +23,11 @@ const Header = () => {
         <Typography variant="h6" sx={{ flexGrow: 1, color: '#fff' }}>
           INVESTIGATE
         </Typography>
-        {/* <ThemeToggleButton/> */}
+        <div style={{display: 'flex', justifyContent: 'space-evenly', width:'30%' }} >
+        <ThemeToggleButton/>
+        <MenuEntities/>
         <NewInvestigationButton variant="contained">Login</NewInvestigationButton>
+        </div>
       </Toolbar>
     </CustomAppBar>
   );
