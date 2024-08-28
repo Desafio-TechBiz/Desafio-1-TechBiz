@@ -23,30 +23,30 @@ const InfoCard = () => {
           </S.InfoHeader>
         </S.SectionHeader>
         
-        <S.Divider>
+        {/* <S.Divider> */}
           <S.RelationshipTitle>Relacionamento</S.RelationshipTitle>
-        </S.Divider>
+        {/* </S.Divider> */}
         <S.RelationshipSection>
-          <S.RelationshipContent>
+            <S.InfoBlock>
             <li>ddd</li>
-            <a href="http://yahoo.com.br">yahoo.com.br</a>
-          </S.RelationshipContent>
+            <a style={{color: 'white'}} href="http://yahoo.com.br">yahoo.com.br</a>
+            </S.InfoBlock>
         </S.RelationshipSection>
         
-        <S.Divider>
           <S.AdvancedTitle>Informações Avançadas</S.AdvancedTitle>
-        </S.Divider>
         <S.AdvancedInfoSection>
           <S.AdvancedContent>
             <S.InfoBlock>
               <S.BlockTitle>Fonte da transformação</S.BlockTitle>
               <S.BlockText>yahoo.com.br</S.BlockText>
               <S.BlockSubText>To Website [Quick lookup]</S.BlockSubText>
-            </S.InfoBlock>
-            <S.InfoBlock>
               <S.BlockTitle>Data da geração</S.BlockTitle>
               <S.BlockText>25-08-2024 12:57:42</S.BlockText>
             </S.InfoBlock>
+            {/* <S.InfoBlock>
+              <S.BlockTitle>Data da geração</S.BlockTitle>
+              <S.BlockText>25-08-2024 12:57:42</S.BlockText>
+            </S.InfoBlock> */}
           </S.AdvancedContent>
         </S.AdvancedInfoSection>
       </S.ContentSection>

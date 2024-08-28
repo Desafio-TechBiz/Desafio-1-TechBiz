@@ -14,16 +14,21 @@ export const CardContainer = styled.div`
 
 export const Header = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center; 
   align-items: center;
-  padding-bottom: 10px;
+  width: 100%;
+  position: relative; 
+  margin-bottom: 15px;
 `;
 
 export const Title = styled.h3`
   font-size: 18px;
   color: white;
-  font-weight: bold;
-  align-items: center;
+  font-weight: 400;
+  font-family: 'Montserrat', sans-serif; 
+  position: absolute; 
+  left: 50%;
+  transform: translateX(-50%); 
 `;
 
 export const CloseButton = styled.button`
@@ -32,6 +37,8 @@ export const CloseButton = styled.button`
   color: white;
   font-size: 30px;
   cursor: pointer;
+  position: absolute;
+  right: 0; 
   &:hover {
     color: #bd93f9;
   }
@@ -41,12 +48,14 @@ export const ContentSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%; 
 `;
 
 export const SectionHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%; 
 `;
 
 export const IconContainer = styled.div`
@@ -58,17 +67,15 @@ export const IconContainer = styled.div`
   justify-content: center;
 
   img {
-    margin-left: 20px; 
     width: 60px;
     height: 60px;
-    align-items: center;
   }
 `;
 
 export const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 200px;
+  width: 220px;
 `;
 
 export const MainText = styled.span`
@@ -78,8 +85,8 @@ export const MainText = styled.span`
 
 export const SubText = styled.span`
   color: #ffffff;
-  font-family: 'Montserrat', sans-serif; /* Define a fonte Montserrat */
-  font-weight: 400; /* Peso Regular da Fonte */
+  font-family: 'Montserrat', sans-serif; 
+  font-weight: 400; 
   font-size: 14px;
 `;
 
@@ -92,24 +99,21 @@ export const LinkText = styled.a`
   }
 `;
 
-export const Divider = styled.div`
-  background-color: rgba(189, 147, 249, 0.33);
-  height 5px;
-  width: 350px;
-  margin-rigth: 10px;
-`;
-
 export const RelationshipSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-top: 10px; /* Espaço adicional acima da seção */
+  width: 100%;
 `;
 
 export const RelationshipTitle = styled.h4`
+  background-color: rgba(189, 147, 249, 0.33);
   font-size: 14px;
   color: white;
-  font-weight: bold;
+  font-weight: 400;
+  padding-left: 5px;
+  font-family: 'Montserrat', sans-serif; 
+  border-radius: 3px;
+  width: 100%;
 `;
 
 export const RelationshipContent = styled.div`
@@ -128,27 +132,35 @@ export const AdvancedInfoSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 5px;
+  width: 100%;
 `;
 
 export const AdvancedTitle = styled.h4`
+  background-color: rgba(189, 147, 249, 0.33);
   font-size: 14px;
   color: white;
-  font-weight: bold;
+  font-weight: 400;
+  padding-left: 5px;
+  font-family: 'Montserrat', sans-serif; 
+  border-radius: 3px;
+  width: 100%;
 `;
 
 export const AdvancedContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
 `;
 
 export const InfoBlock = styled.div`
   background-color: #44475A;
   padding: 10px;
   border-radius: 5px;
+  width: 320px;
 `;
 
-export const InfoHeader= styled.div`
+export const InfoHeader = styled.div`
   background-color: #44475A;
   padding: 10px;
   border-radius: 5px;
@@ -159,17 +171,19 @@ export const BlockTitle = styled.p`
   font-size: 12px;
   color: #FFFFFF;
   margin-bottom: 5px;
+  margin-top: 5px;
   font-weight: bold;
 `;
 
 export const BlockText = styled.p`
   font-size: 14px;
   color: white;
-  margin-bottom: 5px;
+  margin-left: 10px;
 `;
 
 export const BlockSubText = styled.p`
   font-size: 12px;
   color: #FFFFFF;
   margin: 0;
+  margin-left: 10px;
 `;
