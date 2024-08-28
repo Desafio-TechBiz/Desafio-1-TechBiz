@@ -1,12 +1,18 @@
 import React from 'react';
 import * as S from './styles';  
 import * as Icons from '../../assets/image';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleButton } from '../../../store/Slices/menuSlice.js';
 const FloatingButtons = () => {
   const [showMenu, setShowMenu] = React.useState(false);
   const [showRoute, setShowRoute] = React.useState(false);
+  const dispatch = useDispatch();
+
+
 
   const handleButtonClick = (button) => {
+    dispatch(toggleButton(button));
+
     if (button === 'filter') {
       setShowMenu(!showMenu);
       if (showRoute) setShowRoute(false); 

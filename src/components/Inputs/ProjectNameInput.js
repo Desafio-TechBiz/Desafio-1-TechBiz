@@ -6,9 +6,9 @@ import colors from '../../styles/variables';
 const ProjectNameInput = styled(TextField)(({ theme }) => ({
   width: '100%',
   position: 'absolute',
-  zIndex: 100,
+  zIndex: '1000',
   maxWidth: '600px',
-  marginTop: '10%',
+  marginTop: '18%',
   marginBottom: '20px',
   backgroundColor: 'transparent',
   '& input': {

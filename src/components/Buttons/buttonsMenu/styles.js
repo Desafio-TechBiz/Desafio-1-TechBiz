@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const FloatingButtonContainer = styled.div`
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 10px;
   transform: translateY(-50%);
