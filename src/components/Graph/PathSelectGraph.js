@@ -79,7 +79,7 @@ const PathSelectGraph = () => {
   }, []);
 
   return (
-    <div ref={graphRef} style={{ width: "100%", height: "100vh", margin: 0 }} />
+    <div ref={graphRef} style={{ width: "100vw", height: "100vh", margin: 0 }} />
   );
 };
 
