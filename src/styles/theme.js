@@ -5,6 +5,7 @@ const darkTheme = createTheme({
     mode: 'dark',
     primary: {
       main: color.background, 
+      light: 'rgba(255, 255, 255, 0.51)'
     },
     secondary: {
       main: color.currentLine, 
@@ -20,6 +21,7 @@ const darkTheme = createTheme({
   },
   typography: {
     fontFamily: 'Montserrat, Arial, sans-serif',
+    color: color.foreground
   },
 });
 

@@ -1,17 +1,16 @@
 import React from 'react';
+import FloatingButtons from '../../components/Buttons/buttonsMenu';
+import InfoCard from '../../components/InfoBoard';
 import { Typography, Container } from '@mui/material';
 import Graph3D from '../../components/Graph';
 const Home = () => {
   return (
-    <div>
-      {/* <Typography variant="h4" gutterBottom>
-        Welcome to My App
-      </Typography>
-      <Typography variant="body1">
-        This is a simple layout with a header.
-      </Typography> */}
+    <Container>
+      <FloatingButtons/>
       <Graph3D selected="paths"/>
-    </div>
+      <InfoCard/>
+
+      </Container>
   );
 };
 

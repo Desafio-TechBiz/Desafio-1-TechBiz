@@ -10,6 +10,7 @@ export const StyledButton = styled(Button)(({ theme }) => ({
   marginLeft: '20px',
   textTransform: 'none',
   transition: 'background-color 0.3s ease, transform 0.3s ease',
+  fontWeight: '600',
   '&:hover': {
     backgroundColor: 'rgba(248, 248, 242, 0.90)',
     transform: 'scale(1.05)', // Aumenta um pouco o botão ao passar o mouse
