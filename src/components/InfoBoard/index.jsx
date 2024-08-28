@@ -1,6 +1,6 @@
 import React from 'react';
 import * as S from './styles'; 
-import * as Icons from '../assets/image';
+import * as Icons from '../../assets/image';
 
 const InfoCard = () => {
   return (
