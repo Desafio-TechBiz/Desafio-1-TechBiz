@@ -1,6 +1,7 @@
 import React from 'react';
 import FloatingButtons from '../../components/Buttons/buttonsMenu';
 import InfoCard from '../../components/InfoBoard';
+import TransformCard from '../../components/TransformBoard';
 import { Typography, Container } from '@mui/material';
 
 const Home = () => {
@@ -14,6 +15,7 @@ const Home = () => {
         This is a simple layout with a header.
       </Typography> */}
       <InfoCard/>
+      {/* <TransformCard/> */}
 
     </Container>
   );

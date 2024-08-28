@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const CardContainer = styled.div`
   width: 350px;
-  background-color: #282A36;
+  background-color: #6765A6;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 15px;
@@ -18,6 +18,7 @@ export const Header = styled.div`
   align-items: center;
   width: 100%;
   position: relative; 
+  margin-top: 15px;
   margin-bottom: 15px;
 `;
 
@@ -32,7 +33,7 @@ export const Title = styled.h3`
 `;
 
 export const CloseButton = styled.button`
-  background: none;
+  background: transparent;
   border: none;
   color: white;
   font-size: 30px;
@@ -65,6 +66,7 @@ export const IconContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 10px;
 
   img {
     width: 60px;
@@ -154,17 +156,17 @@ export const AdvancedContent = styled.div`
 `;
 
 export const InfoBlock = styled.div`
-  background-color: #44475A;
+  background-color: #8C8CBF;
   padding: 10px;
   border-radius: 5px;
   width: 320px;
 `;
 
 export const InfoHeader = styled.div`
-  background-color: #44475A;
+  background-color: #8C8CBF;
   padding: 10px;
   border-radius: 5px;
-  margin-left: 30px;
+  margin-left: 20px;
 `;
 
 export const BlockTitle = styled.p`
