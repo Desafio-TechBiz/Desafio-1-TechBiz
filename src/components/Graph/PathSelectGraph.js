@@ -22,12 +22,11 @@ const PathSelectGraph = () => {
       .graphData(gData)
       .nodeRelSize(9)
       .nodeColor((node) => (selectedNodes.has(node) ? "yellow" : "grey"))
-      .linkColor((link) => {
-
-        return selectedNodes.has(link.source) && selectedNodes.has(link.target)
+      .linkColor((link) =>
+        selectedNodes.has(link.source) && selectedNodes.has(link.target)
           ? "red"
-          : "grey";
-      }) // Highlight links
+          : "grey"
+      ) // Highlight links
       .onNodeClick((node, event) => {
         if (event.ctrlKey || event.shiftKey || event.altKey) {
           // multi-selection
@@ -42,8 +41,12 @@ const PathSelectGraph = () => {
         }
 
         Graph.nodeColor(Graph.nodeColor()); // Update color of selected nodes
-        Graph.linkColor(Graph.linkColor()); // Update color of links
+        Graph.linkColor(Graph.linkColor());
+        Graph.linkWidth(Graph.linkWidth()); // Update color of links
       })
+      .linkWidth((link) =>
+        selectedNodes.has(link.source) && selectedNodes.has(link.target) ? 4 : 2
+      )
       .onNodeDrag((node, translate) => {
         if (selectedNodes.has(node)) {
           // moving a selected node
