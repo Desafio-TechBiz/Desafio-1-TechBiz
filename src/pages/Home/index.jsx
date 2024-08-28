@@ -10,7 +10,7 @@ const Home = () => {
       <Typography variant="body1">
         This is a simple layout with a header.
       </Typography> */}
-      <Graph3D/>
+      <Graph3D selected="paths"/>
     </div>
   );
 };
