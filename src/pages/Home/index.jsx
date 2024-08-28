@@ -2,22 +2,30 @@ import React from 'react';
 import FloatingButtons from '../../components/Buttons/buttonsMenu';
 import InfoCard from '../../components/InfoBoard';
 import TransformCard from '../../components/TransformBoard';
-import { Typography, Container } from '@mui/material';
+import { useSelector } from 'react-redux';
 
+import Graph3D from '../../components/Graph';
 const Home = () => {
-  return (
-    <Container>
-      <FloatingButtons/>
-      {/* <Typography variant="h4" gutterBottom>
-        Welcome to My App
-      </Typography>
-      <Typography variant="body1">
-        This is a simple layout with a header.
-      </Typography> */}
-      <InfoCard/>
-      {/* <TransformCard/> */}
+  const buttonsState = useSelector((state) => state.menu);
 
-    </Container>
+  const isSelected = () => {
+    if(buttonsState.target){
+      return 'suspects'
+    }
+    if(buttonsState.route){
+      return 'paths'
+    }
+
+    return 'base'
+  }
+
+  return (
+    <div>
+      <FloatingButtons/>
+      <Graph3D selected={isSelected()}/>
+      {/* <InfoCard/> */}
+      {/* <TransformCard/> */}
+      </div>
   );
 };
 
