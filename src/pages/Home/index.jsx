@@ -5,12 +5,12 @@ import { Typography, Container } from '@mui/material';
 import Graph3D from '../../components/Graph';
 const Home = () => {
   return (
-    <Container>
+    <div>
       <FloatingButtons/>
       <Graph3D selected="paths"/>
-      <InfoCard/>
+      {/* <InfoCard/> */}
 
-      </Container>
+      </div>
   );
 };
 
