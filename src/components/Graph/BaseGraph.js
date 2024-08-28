@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import ForceGraph3D from "3d-force-graph";
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
+import fraudData from "../../data/fraud";
 
 const BaseGraph = ({ createNode }) => {
   const graphRef = useRef();
@@ -19,20 +20,6 @@ const BaseGraph = ({ createNode }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const highlightNodes = new Set();
-      const highlightLinks = new Set();
-
-      const N = 20;
-      const gData = {
-        nodes: [...Array(N).keys()].map((i) => ({ id: i })),
-        links: [...Array(N).keys()]
-          .filter((id) => id)
-          .map((id) => ({
-            source: id,
-            target: Math.round(Math.random() * (id - 1)),
-          })),
-      };
-
       const addNode = async (bg) => {
         const { nodes, links } = Graph.graphData();
         const id = nodes.length;
@@ -56,19 +43,28 @@ const BaseGraph = ({ createNode }) => {
         Graph.graphData({ nodes, links });
       };
 
+      const highlightNodes = new Set();
+      const highlightLinks = new Set();
+      const gData = fraudData;
+
       // cross-link node objects
       gData.links.forEach((link) => {
-        const a = gData.nodes[link.source];
-        const b = gData.nodes[link.target];
-        !a.neighbors && (a.neighbors = []);
-        !b.neighbors && (b.neighbors = []);
-        a.neighbors.push(b);
-        b.neighbors.push(a);
+        const nodeMap = new Map(gData.nodes.map((node) => [node.id, node]));
 
-        !a.links && (a.links = []);
-        !b.links && (b.links = []);
-        a.links.push(link);
-        b.links.push(link);
+        const sourceNode = nodeMap.get(link.source);
+        const targetNode = nodeMap.get(link.target);
+        // Inicializa o atributo neighbors para cada nó
+        gData.nodes.forEach((node) => {
+          node.links = [];
+          node.neighbors = [];
+        });
+
+        if (sourceNode && targetNode) {
+          sourceNode.neighbors.push(targetNode);
+          targetNode.neighbors.push(sourceNode);
+          sourceNode.links.push(targetNode);
+          targetNode.links.push(sourceNode);
+        }
       });
 
       const Graph = ForceGraph3D()(graphRef.current)
@@ -115,6 +111,7 @@ const BaseGraph = ({ createNode }) => {
             highlightNodes.clear();
             highlightLinks.clear();
             highlightNodes.add(node);
+            console.log(node);
             node.neighbors.forEach((neighbor) => highlightNodes.add(neighbor));
             node.links.forEach((link) => highlightLinks.add(link));
 

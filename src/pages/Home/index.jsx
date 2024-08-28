@@ -7,7 +7,7 @@ const Home = () => {
   return (
     <Container>
       <FloatingButtons/>
-      <Graph3D selected="paths"/>
+      <Graph3D selected="suspects"/>
       <InfoCard/>
 
       </Container>
