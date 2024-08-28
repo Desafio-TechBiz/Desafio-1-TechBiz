@@ -11,7 +11,9 @@ export const CustomAppBar = styled(AppBar)(({ theme }) => ({
   height: 70, 
   display: 'flex',
   justifyContent: 'space-between',
-  alignContent: 'center'
+  alignContent: 'center',
+  position: 'fixed',
+  zIndex: '1000'
 }));
 
 

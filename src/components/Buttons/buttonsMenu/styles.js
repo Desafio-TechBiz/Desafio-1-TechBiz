@@ -19,7 +19,7 @@ export const ButtonRow = styled.div`
 export const FloatingButton = styled.button`
   width: 50px;
   height: 50px;
-  background-color: #282A36;
+  background-color: #6765A6;
   border: none;
   border-radius: 8px;
   display: flex;
@@ -31,7 +31,7 @@ export const FloatingButton = styled.button`
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #444444;
+    background-color: #8C8CBF;
   }
 
   &:focus {
@@ -46,7 +46,7 @@ export const FloatingButton = styled.button`
 `;
 
 export const FloatingButtonTarget = styled(FloatingButton)`
-  background-color: #44475A;
+  background-color: #6765A6;
 `;
 
 export const SidebarMenu = styled.div`
@@ -82,7 +82,7 @@ background-color:rgba(0,  0,  0,  0);
 export const SearchBarContainer = styled.div`
   display: flex;
   align-items: center;
-  background-color: #282A36;
+  background-color: rgba(103, 101, 166, 0.7);
   padding: 5px;
   border-radius: 5px;
   margin-bottom: 10px;
@@ -99,7 +99,7 @@ export const SearchBarContainer = styled.div`
 export const SearchInput = styled.input`
   border: none;
   background: transparent;
-  color: white;
+  color: #F8F8F2;
   flex-grow: 1;
   padding: 5px;
   font-size: 14px;
@@ -126,9 +126,9 @@ export const MenuItem = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 8px;
-  background-color: #282A36;
+  background-color: #6765A6;
   border-radius: 5px;
-  //margin-bottom: 5px;
+  margin-bottom: 3px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   font-family: 'Inter', sans-serif; 
@@ -136,7 +136,7 @@ export const MenuItem = styled.div`
   color: white; 
 
   &:hover {
-    background-color: #444444;
+    background-color: #8C8CBF;
   }
 
   img {

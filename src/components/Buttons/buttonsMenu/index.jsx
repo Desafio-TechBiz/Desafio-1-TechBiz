@@ -1,12 +1,17 @@
 import React from 'react';
 import * as S from './styles';  
 import * as Icons from '../../assets/image';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleButton } from '../../../store/Slices/menuSlice.js';
 const FloatingButtons = () => {
   const [showMenu, setShowMenu] = React.useState(false);
   const [showRoute, setShowRoute] = React.useState(false);
+  const [showDownload, setShowDownload] = React.useState(false);
+  const dispatch = useDispatch();
 
   const handleButtonClick = (button) => {
+    dispatch(toggleButton(button));
+
     if (button === 'filter') {
       setShowMenu(!showMenu);
       if (showRoute) setShowRoute(false); 
@@ -15,18 +20,23 @@ const FloatingButtons = () => {
       setShowRoute(!showRoute);
       if (showMenu) setShowMenu(false); 
     }
+    if (button === 'target') {
+      setShowDownload(!showDownload); 
+    }
   };
 
   return (
     <>
       <S.FloatingButtonContainer>
         <S.ButtonRow>
-          <S.FloatingButtonTarget onClick={() => handleButtonClick('target')}>
+          <S.FloatingButton onClick={() => handleButtonClick('target')}>
             <img src={Icons.TargetIcon} alt="Target" />
-          </S.FloatingButtonTarget>
-          <S.FloatingButton onClick={() => handleButtonClick('download')}>
-            <img src={Icons.DownloadIcon} alt="Download" />
           </S.FloatingButton>
+          {showDownload && ( 
+            <S.FloatingButtonTarget onClick={() => handleButtonClick('download')}>
+              <img src={Icons.DownloadIcon} alt="Download" />
+            </S.FloatingButtonTarget>
+          )}
         </S.ButtonRow>
         <S.FloatingButton onClick={() => handleButtonClick('filter')}>
           <img src={Icons.FilterIcon} alt="Filter" />
