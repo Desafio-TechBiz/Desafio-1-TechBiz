@@ -7,12 +7,6 @@ const Home = () => {
   return (
     <Container>
       <FloatingButtons/>
-      {/* <Typography variant="h4" gutterBottom>
-        Welcome to My App
-      </Typography>
-      <Typography variant="body1">
-        This is a simple layout with a header.
-      </Typography> */}
       <InfoCard/>
 
     </Container>

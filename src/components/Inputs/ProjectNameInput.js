@@ -47,7 +47,7 @@ const ProjectName = () => {
       <ProjectNameInput
         value={projectName}
         onChange={handleChange}
-        placeholder="Digite o nome do projeto"
+        placeholder="Nome do projeto"
         variant="standard"
       />
     </div>
