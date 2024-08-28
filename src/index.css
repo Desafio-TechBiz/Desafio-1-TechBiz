@@ -58,4 +58,25 @@
     background-color: #0056b3;
   }
   
-  
+  /* index.css ou App.css */
+
+/* Estilo global para a barra de rolagem */
+::-webkit-scrollbar {
+  width: 1px; /* Largura da barra de rolagem */
+  height: 1px; /* Largura da barra de rolagem */
+}
+
+::-webkit-scrollbar-track {
+  background: #282A36; /* Cor do fundo da trilha */
+  border-radius: 10px; /* Arredondar os cantos da trilha */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #44475A; /* Cor do polegar */
+  border-radius: 10px; /* Arredondar os cantos do polegar */
+  transition: background 0.3s ease; /* Transição suave */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: white; /* Cor do polegar ao passar o mouse */
+}
