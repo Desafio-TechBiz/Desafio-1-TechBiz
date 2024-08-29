@@ -1,12 +1,17 @@
-import React, { useEffect, useRef } from "react";
 import ForceGraph3D from "3d-force-graph";
+import { default as React, useEffect, useRef } from "react";
 import fraudData from "../../data/fraud";
+import valueColor from "../../utils/valueColor";
+import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
 
-const SuspectSelectGraph = () => {
+import * as THREE from "three";
+import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
+import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
+
+const SuspectSelectGraph = ({ nodeMode }) => {
   const graphRef = useRef();
 
   useEffect(() => {
-
     const gData = fraudData;
 
     let selectedNodes = new Set();
@@ -30,6 +35,8 @@ const SuspectSelectGraph = () => {
 
         Graph.nodeColor(Graph.nodeColor()); // update color of selected nodes
       })
+      .linkColor(valueColor)
+      .linkOpacity(0.9)
       .onNodeDrag((node, translate) => {
         if (selectedNodes.has(node)) {
           // moving a selected node
@@ -54,6 +61,35 @@ const SuspectSelectGraph = () => {
             ); // unfix controlled nodes
         }
       });
+
+    if (nodeMode === "basic") {
+      Graph.nodeThreeObject((node) => {
+        const nodeEl = document.createElement("div");
+        nodeEl.textContent = node.id;
+        nodeEl.style.color = "black";
+        nodeEl.className = "node-label";
+        nodeEl.style.fontSize = "12px";
+        nodeEl.style.padding = "1px 4px";
+        nodeEl.style.borderRadius = "4px";
+        nodeEl.style.userSelect = "none";
+        nodeEl.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
+        return new CSS2DObject(nodeEl);
+      }).nodeThreeObjectExtend(true);
+    }
+
+    if (nodeMode === "img") {
+      Graph.nodeThreeObject((node) => {
+        const imgTexture = new THREE.TextureLoader().load(
+          node.img_path ? node.img_path : "no_img.png"
+        );
+        imgTexture.colorSpace = THREE.SRGBColorSpace;
+        const material = new THREE.SpriteMaterial({ map: imgTexture });
+        const sprite = new THREE.Sprite(material);
+        sprite.scale.set(12, 12);
+
+        return sprite;
+      });
+    }
 
     return () => {
       // Clean up the graph instance when the component is unmounted

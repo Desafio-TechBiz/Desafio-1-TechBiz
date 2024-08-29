@@ -1,13 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
 import ForceGraph3D from "3d-force-graph";
-import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
+import React, { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
+import SpriteText from 'three-spritetext';
+import {
+  CSS2DObject,
+  CSS2DRenderer,
+} from "three/examples/jsm/renderers/CSS2DRenderer";
 import fraudData from "../../data/fraud";
+import valueColor from "../../utils/valueColor";
+import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
+
 import colors from "../../styles/variables";
 import TransformBoard from "../TransformBoard";
 import InfoBoard from "../InfoBoard";
 import CreateEntitiesBoard from "../CreateEntitiesBoard"
 
-const BaseGraph = ({ createNodeValue }) => {
+const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
   const graphRef = useRef();
   const [hoverNode, setHoverNode] = useState(null);
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
@@ -77,7 +85,9 @@ const BaseGraph = ({ createNodeValue }) => {
         }
       });
 
-      const Graph = ForceGraph3D()(graphRef.current)
+      const Graph = ForceGraph3D({
+        extraRenderers: [new CSS2DRenderer()],
+      })(graphRef.current)
         .graphData(gData)
         .backgroundColor('#282A36')
         .onNodeClick((node) => {
@@ -116,6 +126,8 @@ const BaseGraph = ({ createNodeValue }) => {
               : "rgba(255,160,0,0.8)"
             : "rgba(0,255,255,0.6)"
         )
+        .linkColor(valueColor)
+        .linkOpacity(0.6)
         .linkWidth((link) => (highlightLinks.has(link) ? 4 : 1))
         .linkDirectionalParticles((link) => (highlightLinks.has(link) ? 4 : 0))
         .linkDirectionalParticleWidth(4)
