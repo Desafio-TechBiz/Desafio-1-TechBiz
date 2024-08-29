@@ -3,14 +3,17 @@ import ForceGraph3D from "3d-force-graph";
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
 import fraudData from "../../data/fraud";
 import colors from "../../styles/variables";
-import TransformBoard from "../TransformBoard"
-import InfoBoard from "../InfoBoard"
+import TransformBoard from "../TransformBoard";
+import InfoBoard from "../InfoBoard";
+import CreateEntitiesBoard from "../CreateEntitiesBoard"
 
-const BaseGraph = ({ createNode }) => {
+const BaseGraph = ({ createNodeValue }) => {
   const graphRef = useRef();
   const [hoverNode, setHoverNode] = useState(null);
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
   const [clickNode, setClickNode] = useState(null);
+  const [createNode, setCreateNode] = useState(null);
+  const [links, setLinks] = useState([]);
 
   const handleMouseMove = (event) => {
     if (hoverNode && !clickNode) {
@@ -30,7 +33,7 @@ const BaseGraph = ({ createNode }) => {
       const addNode = async (bg) => {
         const { nodes, links } = Graph.graphData();
         const id = nodes.length;
-        const { newNodeId, newLinks } = await createNode();
+        // const { newNodeId, newLinks } = await createNode();
         Graph.graphData({
           nodes: [...nodes, { id }],
           links: [
@@ -76,6 +79,7 @@ const BaseGraph = ({ createNode }) => {
 
       const Graph = ForceGraph3D()(graphRef.current)
         .graphData(gData)
+        .backgroundColor('#282A36')
         .onNodeClick((node) => {
           if (clickNode && clickNode.id === node.id) {
             setClickNode(null);
@@ -83,7 +87,7 @@ const BaseGraph = ({ createNode }) => {
             // Aim at node from outside it
             const distance = 40;
             const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
-        
+
             const newPos =
               node.x || node.y || node.z
                 ? {
@@ -92,13 +96,13 @@ const BaseGraph = ({ createNode }) => {
                     z: node.z * distRatio,
                   }
                 : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
-        
+
             Graph.cameraPosition(
               newPos, // new position
               node, // lookAt ({ x, y, z })
               3000 // ms transition duration
             );
-        
+
             setHoverNode(false);
             setTimeout(() => {
               setClickNode(node);
@@ -143,7 +147,10 @@ const BaseGraph = ({ createNode }) => {
 
           updateHighlight();
         })
-        .onBackgroundClick(addNode)
+        .onBackgroundClick(() => {
+          setCreateNode(true)
+          // addNode()
+        })
         .onNodeRightClick(removeNode);
 
       function updateHighlight() {
@@ -162,7 +169,16 @@ const BaseGraph = ({ createNode }) => {
 
   return (
     <div onMouseMove={handleMouseMove}>
-      <div ref={graphRef} style={{ height: "100vh", width: "100%", left: 0, pointerEvents: clickNode ? 'none' : 'auto' }} />
+      <div
+        ref={graphRef}
+        style={{
+          height: "100vh",
+          width: "100%",
+          left: 0,
+          pointerEvents: clickNode ? "none" : "auto",
+          
+        }}
+      />
       {hoverNode && !clickNode && (
         <div
           className="modal"
@@ -185,10 +201,24 @@ const BaseGraph = ({ createNode }) => {
             left: "68vw",
             top: "30vh",
             zIndex: 1000,
-            pointerEvents: 'auto'
+            pointerEvents: "auto",
           }}
         >
           <TransformBoard resetClickNode={handleResetClickNode} />
+        </div>
+      )}
+      {createNode && (
+        <div
+          className="modal"
+          style={{
+            position: "absolute",
+            left: "68vw",
+            top: "30vh",
+            zIndex: 1000,
+            pointerEvents: "auto",
+          }}
+        >
+          <CreateEntitiesBoard/>
         </div>
       )}
     </div>
