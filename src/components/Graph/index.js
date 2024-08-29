@@ -11,9 +11,7 @@ const componentsDictionary = {
 };
 
 const Graph = ({ selected }) => {
-  console.log('aqui', selected)
   const SelectedGraph = componentsDictionary[selected];
-  // console.log(buttonsState.target)
   return (
     <div style={{maxHeight: '100vh', maxWidth: '100vw'}}>
       <SelectedGraph />

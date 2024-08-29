@@ -11,6 +11,7 @@ export const CardContainer = styled.div`
   flex-direction: column;
   gap: 15px;
   margin-bottom: 30px;
+  z-index: 1000;
 `;
 
 export const Header = styled.div`

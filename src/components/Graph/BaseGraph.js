@@ -10,20 +10,30 @@ import fraudData from "../../data/fraud";
 import valueColor from "../../utils/valueColor";
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
 
+import colors from "../../styles/variables";
+import TransformBoard from "../TransformBoard";
+import InfoBoard from "../InfoBoard";
+import CreateEntitiesBoard from "../CreateEntitiesBoard"
 
-const BaseGraph = ({ createNode, nodeMode }) => {
+const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
   const graphRef = useRef();
   const [hoverNode, setHoverNode] = useState(null);
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
-  const [clickNode, setClickNode] = useState(false);
+  const [clickNode, setClickNode] = useState(null);
+  const [createNode, setCreateNode] = useState(null);
+  const [links, setLinks] = useState([]);
 
   const handleMouseMove = (event) => {
-    if (hoverNode) {
+    if (hoverNode && !clickNode) {
       setModalPosition({
         x: event.clientX + 10,
         y: event.clientY + 10,
       });
     }
+  };
+
+  const handleResetClickNode = () => {
+    setClickNode(null);
   };
 
   useEffect(() => {
@@ -79,30 +89,35 @@ const BaseGraph = ({ createNode, nodeMode }) => {
         extraRenderers: [new CSS2DRenderer()],
       })(graphRef.current)
         .graphData(gData)
+        .backgroundColor('#282A36')
         .onNodeClick((node) => {
-          // Aim at node from outside it
+          if (clickNode && clickNode.id === node.id) {
+            setClickNode(null);
+          } else {
+            // Aim at node from outside it
+            const distance = 40;
+            const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
 
-          const distance = 40;
-          const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
+            const newPos =
+              node.x || node.y || node.z
+                ? {
+                    x: node.x * distRatio,
+                    y: node.y * distRatio,
+                    z: node.z * distRatio,
+                  }
+                : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
 
-          const newPos =
-            node.x || node.y || node.z
-              ? {
-                  x: node.x * distRatio,
-                  y: node.y * distRatio,
-                  z: node.z * distRatio,
-                }
-              : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
+            Graph.cameraPosition(
+              newPos, // new position
+              node, // lookAt ({ x, y, z })
+              3000 // ms transition duration
+            );
 
-          Graph.cameraPosition(
-            newPos, // new position
-            node, // lookAt ({ x, y, z })
-            3000 // ms transition duration
-          );
-          setTimeout(() => {
             setHoverNode(false);
-            setClickNode(node);
-          }, 2500);
+            setTimeout(() => {
+              setClickNode(node);
+            }, 2500);
+          }
         })
         .nodeColor((node) =>
           highlightNodes.has(node)
@@ -117,26 +132,20 @@ const BaseGraph = ({ createNode, nodeMode }) => {
         .linkDirectionalParticles((link) => (highlightLinks.has(link) ? 4 : 0))
         .linkDirectionalParticleWidth(4)
         .onNodeHover((node) => {
-          // Update hover state
-
-          if (node) {
-            highlightNodes.clear();
-            highlightLinks.clear();
-            highlightNodes.add(node);
-            console.log(node);
-            node.neighbors.forEach((neighbor) => highlightNodes.add(neighbor));
-            node.links.forEach((link) => highlightLinks.add(link));
-
-            // Update modal position
-            //   setModalPosition({
-            //     x: window.event.clientX + 10,
-            //     y: window.event.clientY + 10,
-            //   });
+          if (!clickNode) {
+            // Update hover state
+            if (node) {
+              highlightNodes.clear();
+              highlightLinks.clear();
+              highlightNodes.add(node);
+              node.neighbors.forEach((neighbor) =>
+                highlightNodes.add(neighbor)
+              );
+              node.links.forEach((link) => highlightLinks.add(link));
+            }
+            setHoverNode(node);
+            updateHighlight();
           }
-
-          setHoverNode(node);
-
-          updateHighlight();
         })
         .onLinkHover((link) => {
           highlightNodes.clear();
@@ -150,55 +159,11 @@ const BaseGraph = ({ createNode, nodeMode }) => {
 
           updateHighlight();
         })
-        .onBackgroundClick(addNode)
-        .onNodeRightClick(removeNode)
-        .linkThreeObjectExtend(true)
-        .linkThreeObject((link) => {
-          // extend link with text sprite
-          const sprite = new SpriteText(link.relationship);
-          sprite.color = "lightgrey";
-          sprite.textHeight = 1.5;
-          return sprite;
+        .onBackgroundClick(() => {
+          setCreateNode(true)
+          // addNode()
         })
-        .linkPositionUpdate((sprite, { start, end }) => {
-          const middlePos = Object.assign(
-            ...["x", "y", "z"].map((c) => ({
-              [c]: start[c] + (end[c] - start[c]) / 2, // calc middle point
-            }))
-          );
-
-          // Position sprite
-          Object.assign(sprite.position, middlePos);
-        });
-
-      if (nodeMode === "basic") {
-        Graph.nodeThreeObject((node) => {
-          const nodeEl = document.createElement("div");
-          nodeEl.textContent = node.id;
-          nodeEl.style.color = "black";
-          nodeEl.className = "node-label";
-          nodeEl.style.fontSize = "12px";
-          nodeEl.style.padding = "1px 4px";
-          nodeEl.style.borderRadius = "4px";
-          nodeEl.style.userSelect = "none";
-          nodeEl.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
-          return new CSS2DObject(nodeEl);
-        }).nodeThreeObjectExtend(true);
-      }
-
-      if (nodeMode === "img") {
-        Graph.nodeThreeObject((node) => {
-          const imgTexture = new THREE.TextureLoader().load(
-            node.img_path ? node.img_path : "no_img.png"
-          );
-          imgTexture.colorSpace = THREE.SRGBColorSpace;
-          const material = new THREE.SpriteMaterial({ map: imgTexture });
-          const sprite = new THREE.Sprite(material);
-          sprite.scale.set(12, 12);
-
-          return sprite;
-        });
-      }
+        .onNodeRightClick(removeNode);
 
       function updateHighlight() {
         Graph.nodeColor(Graph.nodeColor())
@@ -216,24 +181,28 @@ const BaseGraph = ({ createNode, nodeMode }) => {
 
   return (
     <div onMouseMove={handleMouseMove}>
-      <div ref={graphRef} style={{ height: "100vh", width: "100%", left: 0 }} />
-      {hoverNode && (
+      <div
+        ref={graphRef}
+        style={{
+          height: "100vh",
+          width: "100%",
+          left: 0,
+          pointerEvents: clickNode ? "none" : "auto",
+          
+        }}
+      />
+      {hoverNode && !clickNode && (
         <div
           className="modal"
           style={{
             position: "absolute",
-            left: modalPosition.x,
-            top: modalPosition.y,
-            backgroundColor: "white",
-            padding: "10px",
-            borderRadius: "5px",
-            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            left: "68vw",
+            top: "20vh",
             zIndex: 1000,
             pointerEvents: "none", // Permite que o mouse passe por cima do modal
           }}
         >
-          <h4>Nó: {hoverNode.id}</h4>
-          <p>Detalhes do nó...</p>
+          <InfoBoard />
         </div>
       )}
       {clickNode && (
@@ -241,17 +210,27 @@ const BaseGraph = ({ createNode, nodeMode }) => {
           className="modal"
           style={{
             position: "absolute",
-            left: "75vw",
-            top: "50vh",
-            backgroundColor: "white",
-            padding: "10px",
-            borderRadius: "5px",
-            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            left: "68vw",
+            top: "30vh",
             zIndex: 1000,
-            pointerEvents: "none", // Permite que o mouse passe por cima do modal
+            pointerEvents: "auto",
           }}
         >
-          <h4>Transforms</h4>
+          <TransformBoard resetClickNode={handleResetClickNode} />
+        </div>
+      )}
+      {createNode && (
+        <div
+          className="modal"
+          style={{
+            position: "absolute",
+            left: "68vw",
+            top: "30vh",
+            zIndex: 1000,
+            pointerEvents: "auto",
+          }}
+        >
+          <CreateEntitiesBoard/>
         </div>
       )}
     </div>
