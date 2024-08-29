@@ -125,7 +125,7 @@ const SelectionBox = () => {
         </h4>
         <StyledInput
           type="text"
-          placeholder="Pesquisar Entidade"
+          placeholder="Insira cnpj, cpf, e-mail..."
           value={searchTerm}
           onChange={handleSearchChange}
         /> 
