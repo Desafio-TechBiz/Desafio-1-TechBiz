@@ -6,7 +6,8 @@ import ThemeToggleButton from "../Buttons/ThemeToggleButton.js"
 import Upload from "../Buttons/Upload.js"
 import ProjectNameInput from "../Inputs/ProjectNameInput.js"
 export const CustomAppBar = styled(AppBar)(({ theme }) => ({
-  backgroundColor: theme.palette.secondary.main,
+  // backgroundColor: theme.palette.secondary.main,
+  backgroundColor: "rgba(56, 59, 75, 0.53)",
   boxShadow: '1',// 
   height: 70, 
   display: 'flex',

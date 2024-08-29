@@ -3,7 +3,7 @@ import * as S from './styles';
 import SearchIcon from '../assets/image/search.svg'; 
 import PinIcon from '../assets/image/pin.svg'; 
 
-const TransformCard = () => {
+const TransformCard = ({ resetClickNode }) => {
   const [pinnedButtons, setPinnedButtons] = useState([false, false, false, false]);
 
   const togglePin = (index) => {
@@ -16,7 +16,7 @@ const TransformCard = () => {
     <S.CardContainer>
       <S.Header>
         <S.Title>Aplicar Transformações</S.Title>
-        <S.CloseButton>&times;</S.CloseButton>
+        <S.CloseButton onClick={resetClickNode}>&times;</S.CloseButton>
       </S.Header>
       <S.ContentSection>
         <S.SearchContainer>

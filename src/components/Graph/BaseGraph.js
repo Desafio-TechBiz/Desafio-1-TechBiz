@@ -2,20 +2,27 @@ import React, { useEffect, useRef, useState } from "react";
 import ForceGraph3D from "3d-force-graph";
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
 import fraudData from "../../data/fraud";
+import colors from "../../styles/variables";
+import TransformBoard from "../TransformBoard"
+import InfoBoard from "../InfoBoard"
 
 const BaseGraph = ({ createNode }) => {
   const graphRef = useRef();
   const [hoverNode, setHoverNode] = useState(null);
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
-  const [clickNode, setClickNode] = useState(false);
+  const [clickNode, setClickNode] = useState(null);
 
   const handleMouseMove = (event) => {
-    if (hoverNode) {
+    if (hoverNode && !clickNode) {
       setModalPosition({
         x: event.clientX + 10,
         y: event.clientY + 10,
       });
     }
+  };
+
+  const handleResetClickNode = () => {
+    setClickNode(null);
   };
 
   useEffect(() => {
@@ -70,29 +77,33 @@ const BaseGraph = ({ createNode }) => {
       const Graph = ForceGraph3D()(graphRef.current)
         .graphData(gData)
         .onNodeClick((node) => {
-          // Aim at node from outside it
-
-          const distance = 40;
-          const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
-
-          const newPos =
-            node.x || node.y || node.z
-              ? {
-                  x: node.x * distRatio,
-                  y: node.y * distRatio,
-                  z: node.z * distRatio,
-                }
-              : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
-
-          Graph.cameraPosition(
-            newPos, // new position
-            node, // lookAt ({ x, y, z })
-            3000 // ms transition duration
-          );
-          setTimeout(() => {
+          if (clickNode && clickNode.id === node.id) {
+            setClickNode(null);
+          } else {
+            // Aim at node from outside it
+            const distance = 40;
+            const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
+        
+            const newPos =
+              node.x || node.y || node.z
+                ? {
+                    x: node.x * distRatio,
+                    y: node.y * distRatio,
+                    z: node.z * distRatio,
+                  }
+                : { x: 0, y: 0, z: distance }; // special case if node is in (0,0,0)
+        
+            Graph.cameraPosition(
+              newPos, // new position
+              node, // lookAt ({ x, y, z })
+              3000 // ms transition duration
+            );
+        
             setHoverNode(false);
-            setClickNode(node);
-          }, 2500);
+            setTimeout(() => {
+              setClickNode(node);
+            }, 2500);
+          }
         })
         .nodeColor((node) =>
           highlightNodes.has(node)
@@ -105,26 +116,20 @@ const BaseGraph = ({ createNode }) => {
         .linkDirectionalParticles((link) => (highlightLinks.has(link) ? 4 : 0))
         .linkDirectionalParticleWidth(4)
         .onNodeHover((node) => {
-          // Update hover state
-
-          if (node) {
-            highlightNodes.clear();
-            highlightLinks.clear();
-            highlightNodes.add(node);
-            console.log(node);
-            node.neighbors.forEach((neighbor) => highlightNodes.add(neighbor));
-            node.links.forEach((link) => highlightLinks.add(link));
-
-            // Update modal position
-            //   setModalPosition({
-            //     x: window.event.clientX + 10,
-            //     y: window.event.clientY + 10,
-            //   });
+          if (!clickNode) {
+            // Update hover state
+            if (node) {
+              highlightNodes.clear();
+              highlightLinks.clear();
+              highlightNodes.add(node);
+              node.neighbors.forEach((neighbor) =>
+                highlightNodes.add(neighbor)
+              );
+              node.links.forEach((link) => highlightLinks.add(link));
+            }
+            setHoverNode(node);
+            updateHighlight();
           }
-
-          setHoverNode(node);
-
-          updateHighlight();
         })
         .onLinkHover((link) => {
           highlightNodes.clear();
@@ -157,24 +162,19 @@ const BaseGraph = ({ createNode }) => {
 
   return (
     <div onMouseMove={handleMouseMove}>
-      <div ref={graphRef} style={{ height: "100vh", width: "100%", left: 0 }} />
-      {hoverNode && (
+      <div ref={graphRef} style={{ height: "100vh", width: "100%", left: 0, pointerEvents: clickNode ? 'none' : 'auto' }} />
+      {hoverNode && !clickNode && (
         <div
           className="modal"
           style={{
             position: "absolute",
-            left: modalPosition.x,
-            top: modalPosition.y,
-            backgroundColor: "white",
-            padding: "10px",
-            borderRadius: "5px",
-            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            left: "68vw",
+            top: "20vh",
             zIndex: 1000,
             pointerEvents: "none", // Permite que o mouse passe por cima do modal
           }}
         >
-          <h4>Nó: {hoverNode.id}</h4>
-          <p>Detalhes do nó...</p>
+          <InfoBoard />
         </div>
       )}
       {clickNode && (
@@ -182,17 +182,13 @@ const BaseGraph = ({ createNode }) => {
           className="modal"
           style={{
             position: "absolute",
-            left: "75vw",
-            top: "50vh",
-            backgroundColor: "white",
-            padding: "10px",
-            borderRadius: "5px",
-            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            left: "68vw",
+            top: "30vh",
             zIndex: 1000,
-            pointerEvents: "none", // Permite que o mouse passe por cima do modal
+            pointerEvents: 'auto'
           }}
         >
-          <h4>Transforms</h4>
+          <TransformBoard resetClickNode={handleResetClickNode} />
         </div>
       )}
     </div>
