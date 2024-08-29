@@ -22,7 +22,7 @@ const Home = () => {
   return (
     <div>
       <FloatingButtons/>
-      <Graph3D selected={isSelected()}/>
+      <Graph3D selected={isSelected()} nodeMode={'img'}/>
       {/* <InfoCard/> */}
       {/* <TransformCard/> */}
       </div>
