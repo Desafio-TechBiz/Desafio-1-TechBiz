@@ -1,9 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
 import ForceGraph3D from "3d-force-graph";
-import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
+import React, { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
+import SpriteText from 'three-spritetext';
+import {
+  CSS2DObject,
+  CSS2DRenderer,
+} from "three/examples/jsm/renderers/CSS2DRenderer";
 import fraudData from "../../data/fraud";
+import valueColor from "../../utils/valueColor";
+import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
 
-const BaseGraph = ({ createNode }) => {
+
+const BaseGraph = ({ createNode, nodeMode }) => {
   const graphRef = useRef();
   const [hoverNode, setHoverNode] = useState(null);
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
@@ -23,7 +31,7 @@ const BaseGraph = ({ createNode }) => {
       const addNode = async (bg) => {
         const { nodes, links } = Graph.graphData();
         const id = nodes.length;
-        const { newNodeId, newLinks } = await createNode();
+        // const { newNodeId, newLinks } = await createNode();
         Graph.graphData({
           nodes: [...nodes, { id }],
           links: [
@@ -67,7 +75,9 @@ const BaseGraph = ({ createNode }) => {
         }
       });
 
-      const Graph = ForceGraph3D()(graphRef.current)
+      const Graph = ForceGraph3D({
+        extraRenderers: [new CSS2DRenderer()],
+      })(graphRef.current)
         .graphData(gData)
         .onNodeClick((node) => {
           // Aim at node from outside it
@@ -101,6 +111,8 @@ const BaseGraph = ({ createNode }) => {
               : "rgba(255,160,0,0.8)"
             : "rgba(0,255,255,0.6)"
         )
+        .linkColor(valueColor)
+        .linkOpacity(0.6)
         .linkWidth((link) => (highlightLinks.has(link) ? 4 : 1))
         .linkDirectionalParticles((link) => (highlightLinks.has(link) ? 4 : 0))
         .linkDirectionalParticleWidth(4)
@@ -139,7 +151,54 @@ const BaseGraph = ({ createNode }) => {
           updateHighlight();
         })
         .onBackgroundClick(addNode)
-        .onNodeRightClick(removeNode);
+        .onNodeRightClick(removeNode)
+        .linkThreeObjectExtend(true)
+        .linkThreeObject((link) => {
+          // extend link with text sprite
+          const sprite = new SpriteText(link.relationship);
+          sprite.color = "lightgrey";
+          sprite.textHeight = 1.5;
+          return sprite;
+        })
+        .linkPositionUpdate((sprite, { start, end }) => {
+          const middlePos = Object.assign(
+            ...["x", "y", "z"].map((c) => ({
+              [c]: start[c] + (end[c] - start[c]) / 2, // calc middle point
+            }))
+          );
+
+          // Position sprite
+          Object.assign(sprite.position, middlePos);
+        });
+
+      if (nodeMode === "basic") {
+        Graph.nodeThreeObject((node) => {
+          const nodeEl = document.createElement("div");
+          nodeEl.textContent = node.id;
+          nodeEl.style.color = "black";
+          nodeEl.className = "node-label";
+          nodeEl.style.fontSize = "12px";
+          nodeEl.style.padding = "1px 4px";
+          nodeEl.style.borderRadius = "4px";
+          nodeEl.style.userSelect = "none";
+          nodeEl.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
+          return new CSS2DObject(nodeEl);
+        }).nodeThreeObjectExtend(true);
+      }
+
+      if (nodeMode === "img") {
+        Graph.nodeThreeObject((node) => {
+          const imgTexture = new THREE.TextureLoader().load(
+            node.img_path ? node.img_path : "no_img.png"
+          );
+          imgTexture.colorSpace = THREE.SRGBColorSpace;
+          const material = new THREE.SpriteMaterial({ map: imgTexture });
+          const sprite = new THREE.Sprite(material);
+          sprite.scale.set(12, 12);
+
+          return sprite;
+        });
+      }
 
       function updateHighlight() {
         Graph.nodeColor(Graph.nodeColor())
