@@ -9,7 +9,7 @@ import {
 import fraudData from "../../data/fraud";
 import valueColor from "../../utils/valueColor";
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
-
+import { useSelector } from 'react-redux';
 import colors from "../../styles/variables";
 import TransformBoard from "../TransformBoard";
 import InfoBoard from "../InfoBoard";
@@ -20,9 +20,9 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
   const [hoverNode, setHoverNode] = useState(null);
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
   const [clickNode, setClickNode] = useState(null);
-  const [createNode, setCreateNode] = useState(null);
+  const [createNode, setCreateNode] = useState(false);
   const [links, setLinks] = useState([]);
-
+  const newNode = useSelector((state) => state.node.node);
   const handleMouseMove = (event) => {
     if (hoverNode && !clickNode) {
       setModalPosition({
@@ -38,16 +38,23 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const addNode = async (bg) => {
+      const addNode = () => {
         const { nodes, links } = Graph.graphData();
-        const id = nodes.length;
-        // const { newNodeId, newLinks } = await createNode();
+        console.log(nodes)
+        // Cria um novo nó com informações estáticas
+        const newN = {
+          id: `pessoa_${nodes.length + 1}`, // ID único baseado no número de nós existentes
+          type: newNode?.type,
+          name: newNode?.name, // Nome padrão
+          role: "Nova Função", // Função padrão
+          img_path: "/imgs/default.jpg", // Caminho da imagem padrão
+          neighbors: []
+        };
+      
+        // Atualiza o grafo com o novo nó
         Graph.graphData({
-          nodes: [...nodes, { id }],
-          links: [
-            ...links,
-            { source: id, target: Math.round(Math.random() * (id - 1)) },
-          ],
+          nodes: [...nodes, newN],
+          links: [...links] 
         });
       };
 
@@ -138,7 +145,7 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
               highlightNodes.clear();
               highlightLinks.clear();
               highlightNodes.add(node);
-              node.neighbors.forEach((neighbor) =>
+              node.neighbors?.forEach((neighbor) =>
                 highlightNodes.add(neighbor)
               );
               node.links.forEach((link) => highlightLinks.add(link));
@@ -160,10 +167,12 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
           updateHighlight();
         })
         .onBackgroundClick(() => {
-          setCreateNode(true)
-          // addNode()
+            // addNode();
+          setCreateNode(prevState => !prevState);
         })
         .onNodeRightClick(removeNode);
+
+
 
       function updateHighlight() {
         Graph.nodeColor(Graph.nodeColor())
@@ -171,16 +180,22 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
           .linkDirectionalParticles(Graph.linkDirectionalParticles());
       }
 
+      if(newNode){
+        addNode();
+      }
       return () => {
         Graph._destructor();
       };
     };
 
     getData();
-  }, []);
+    
+  }, [newNode]);
 
+  
   return (
     <div onMouseMove={handleMouseMove}>
+      
       <div
         ref={graphRef}
         style={{

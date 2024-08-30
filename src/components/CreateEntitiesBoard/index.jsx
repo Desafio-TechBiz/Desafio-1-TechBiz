@@ -1,14 +1,20 @@
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
-import ia from "../assets/image/ia.svg"
+import ia from "../assets/image/ia.svg";
+import EntitySearch from "./EntitySearch"
+import { createNode} from '../../store/Slices/newNodeSlice.js';
+import { useDispatch, useSelector } from 'react-redux';
+
 // Dados fictícios
 const entities = [
-  { id: 1, name: "Pessoa", value: "12345678" },
+  { id: 1, name: "Pessoa", value: "Maria Clara" },
   { id: 4, name: "Empresa", value: "11111111111" },
   { id: 2, name: "E-mail", value: "@" },
   { id: 3, name: "Telefone", value: "(99)9999-9999" },
   // { id: 5, name: "Pessoa Epsilon", value: "56789012" },
 ];
+
+
 
 const Container = styled("div")(({ theme }) => ({
   width: "400px",
@@ -44,7 +50,7 @@ const StyledList = styled("ul")(({ theme, show }) => ({
   // margin: "2px 0 0 0",
   // position: 'absolute',
   width: "100%",
-  backgroundColor: 'transparent',
+  backgroundColor: "transparent",
   // boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
   borderRadius: "8px",
   overflow: "hidden",
@@ -60,21 +66,32 @@ const StyledList = styled("ul")(({ theme, show }) => ({
 const StyledListItem = styled("li")(({ theme }) => ({
   padding: "10px",
   cursor: "pointer",
-  marginBottom: '4px',
-  display: 'flex',
+  marginBottom: "4px",
+  display: "flex",
   // height: '15px',
   "&:hover": {
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    backgroundColor: "rgba(255, 255, 255, 0.4)",
   },
-  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  backgroundColor: "rgba(255, 255, 255, 0.1)",
   color: "white",
-  borderRadius: '10px'
+  borderRadius: "10px",
 }));
+
 
 const SelectionBox = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredEntities, setFilteredEntities] = useState([]);
   const [isListVisible, setIsListVisible] = useState(false);
+  const [chooseEntitie, setChooseEntitie] = useState(false);
+  const [selectedObject, setSelectedObject] = useState({
+    id: '',
+    type: '',
+    name: '',
+    role: '', // Defina valores padrão ou deixe vazio se não for usado
+    img_path: '', // Defina valores padrão ou deixe vazio se não for usado
+  });
+  const dispatch = useDispatch();
+
 
   const handleSearchChange = (event) => {
     const value = event.target.value;
@@ -83,7 +100,7 @@ const SelectionBox = () => {
     if (value) {
       // Filtra entidades baseadas no valor de pesquisa
       const filtered = entities.filter((entity) =>
-        entity.value.includes(value)
+        entity.value.toLowerCase().includes(value)
       );
       setFilteredEntities(filtered);
       setIsListVisible(true);
@@ -93,15 +110,23 @@ const SelectionBox = () => {
     }
   };
 
-
   const handleSelect = (entity) => {
-    setSearchTerm(entity.name);
+    const node = {
+      id: entity.id,
+      type: entity.name,
+      name: searchTerm,
+      role: '', // Defina o valor adequado se for usado
+      img_path: '', // Defina o valor adequado se for usado
+    }
+    dispatch(createNode(node));
+    setSearchTerm('');
     setFilteredEntities([]);
     setIsListVisible(false);
   };
-
   return (
     <Container>
+      {!chooseEntitie? 
+      <>
       <h2
         style={{
           fontFamily: "Montserrat",
@@ -128,34 +153,58 @@ const SelectionBox = () => {
           placeholder="Insira cnpj, cpf, e-mail..."
           value={searchTerm}
           onChange={handleSearchChange}
-        /> 
+        />
       </div>
 
-        <h4
-          style={{
-            fontFamily: "Montserrat",
-            fontWeight: "normal",
-            color: "white",
-            fontSize: "15px",
-            marginTop: '8px', 
-            display: isListVisible ? "block" : "none"
-
-          }}
-        >
-          O dado que você está cadastrando é um(a)...
-        </h4>
-        <StyledList show={isListVisible}>
-
-          {filteredEntities.map((entity) => (
-            <StyledListItem
-              key={entity.id}
-              onClick={() => handleSelect(entity)}
-            >
-              <img src={ia} alt="ia" style={{marginRight: '5px', width: '20px'}}/>
-              {entity.name}
-            </StyledListItem>
-          ))}
-        </StyledList>
+      <h4
+        style={{
+          fontFamily: "Montserrat",
+          fontWeight: "normal",
+          color: "white",
+          fontSize: "15px",
+          marginTop: "8px",
+          display: isListVisible ? "block" : "none",
+        }}
+      >
+        O dado que você está cadastrando é um(a)...
+      </h4>
+      <StyledList show={isListVisible}>
+        {filteredEntities.map((entity) => (
+          <StyledListItem key={entity.id} onClick={() => handleSelect(entity)}>
+            <img
+              src={ia}
+              alt="ia"
+              style={{ marginRight: "5px", width: "20px" }}
+            />
+            {entity.name}
+          </StyledListItem>
+        ))}
+      </StyledList>
+      <h4
+        style={{
+          fontFamily: "Montserrat",
+          fontWeight: "normal",
+          color: "white",
+          fontSize: "15px",
+          marginTop: "8px",
+          display: isListVisible ? "block" : "none",
+          cursor: "pointer",
+          textDecoration: "underline",
+          transition: "color 0.3s ease, transform 0.3s ease",
+        }}
+        onClick={() => {setChooseEntitie(true)}}
+        onMouseEnter={(e) => {
+          e.target.style.fontWeight = "bold";
+          e.target.style.transform = "scale(1.02)";
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.color = "white";
+          e.target.style.transform = "scale(1)";
+        }}
+      >
+        Prefiro escolher a entidade
+      </h4>
+      </>: <EntitySearch/> }
     </Container>
   );
 };
