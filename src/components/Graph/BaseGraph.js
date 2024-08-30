@@ -1,7 +1,7 @@
 import ForceGraph3D from "3d-force-graph";
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import SpriteText from 'three-spritetext';
+import SpriteText from "three-spritetext";
 import {
   CSS2DObject,
   CSS2DRenderer,
@@ -71,26 +71,21 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
       const highlightNodes = new Set();
       const highlightLinks = new Set();
       const gData = fraudData;
-
-      // cross-link node objects
-      gData.links.forEach((link) => {
-        const nodeMap = new Map(gData.nodes.map((node) => [node.id, node]));
-
-        const sourceNode = nodeMap.get(link.source);
-        const targetNode = nodeMap.get(link.target);
-        // Inicializa o atributo neighbors para cada nó
-        gData.nodes.forEach((node) => {
-          node.links = [];
-          node.neighbors = [];
-        });
-
-        if (sourceNode && targetNode) {
-          sourceNode.neighbors.push(targetNode);
-          targetNode.neighbors.push(sourceNode);
-          sourceNode.links.push(targetNode);
-          targetNode.links.push(sourceNode);
-        }
+      
+      gData.links.forEach(link => {
+        const a = gData.nodes[link.source];
+        const b = gData.nodes[link.target];
+        !a.neighbors && (a.neighbors = []);
+        !b.neighbors && (b.neighbors = []);
+        a.neighbors.push(b);
+        b.neighbors.push(a);
+  
+        !a.links && (a.links = []);
+        !b.links && (b.links = []);
+        a.links.push(link);
+        b.links.push(link);
       });
+  
 
       const Graph = ForceGraph3D({
         extraRenderers: [new CSS2DRenderer()],
@@ -135,25 +130,31 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
         )
         .linkColor(valueColor)
         .linkOpacity(0.6)
-        .linkWidth((link) => (highlightLinks.has(link) ? 4 : 1))
-        .linkDirectionalParticles((link) => (highlightLinks.has(link) ? 4 : 0))
-        .linkDirectionalParticleWidth(4)
+        .linkWidth((link) => (highlightLinks.has(link) ? 2 : 1))
+        .linkDirectionalParticles((link) => (highlightLinks.has(link) ? 2 : 0))
+        .linkDirectionalParticleWidth(2)
         .onNodeHover((node) => {
+          // Update hover state
           if (!clickNode) {
-            // Update hover state
-            if (node) {
-              highlightNodes.clear();
-              highlightLinks.clear();
-              highlightNodes.add(node);
-              node.neighbors?.forEach((neighbor) =>
-                highlightNodes.add(neighbor)
-              );
-              node.links.forEach((link) => highlightLinks.add(link));
-            }
-            setHoverNode(node);
-            updateHighlight();
+          if (node) {
+            highlightNodes.clear();
+            highlightLinks.clear();
+            highlightNodes.add(node);
+            console.log(node);
+            node.neighbors.forEach((neighbor) => highlightNodes.add(neighbor));
+            node.links.forEach((link) => highlightLinks.add(link));
+
+            // Update modal position
+            //   setModalPosition({
+            //     x: window.event.clientX + 10,
+            //     y: window.event.clientY + 10,
+            //   });
           }
-        })
+
+          setHoverNode(node);
+
+          updateHighlight();
+        }})
         .onLinkHover((link) => {
           highlightNodes.clear();
           highlightLinks.clear();
@@ -167,12 +168,57 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
           updateHighlight();
         })
         .onBackgroundClick(() => {
-            // addNode();
           setCreateNode(prevState => !prevState);
+          // addNode()
         })
-        .onNodeRightClick(removeNode);
+        .onNodeRightClick(removeNode)
+        .linkThreeObjectExtend(true)
+        .linkThreeObject((link) => {
+          // extend link with text sprite
+          const sprite = new SpriteText(link.relationship);
+          sprite.color = "lightgrey";
+          sprite.textHeight = 1.5;
+          return sprite;
+        })
+        .linkPositionUpdate((sprite, { start, end }) => {
+          const middlePos = Object.assign(
+            ...["x", "y", "z"].map((c) => ({
+              [c]: start[c] + (end[c] - start[c]) / 2, // calc middle point
+            }))
+          );
 
+          // Position sprite
+          Object.assign(sprite.position, middlePos);
+        });
 
+      if (nodeModeValue === "basic") {
+        Graph.nodeThreeObject((node) => {
+          const nodeEl = document.createElement("div");
+          nodeEl.textContent = node.name;
+          nodeEl.style.color = "black";
+          nodeEl.className = "node-label";
+          nodeEl.style.fontSize = "12px";
+          nodeEl.style.padding = "1px 4px";
+          nodeEl.style.borderRadius = "4px";
+          nodeEl.style.userSelect = "none";
+          nodeEl.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
+          return new CSS2DObject(nodeEl);
+        }).nodeThreeObjectExtend(true);
+      }
+
+      if (nodeModeValue === "img") {
+        Graph.nodeThreeObject((node) => {
+          const imgTexture = new THREE.TextureLoader().load(
+            node.img_path ? node.img_path : "no_img.png"
+          );
+          imgTexture.colorSpace = THREE.SRGBColorSpace;
+          const material = new THREE.SpriteMaterial({ map: imgTexture });
+          const sprite = new THREE.Sprite(material);
+          sprite.scale.set(12, 12);
+
+          return sprite;
+        });
+      }
 
       function updateHighlight() {
         Graph.nodeColor(Graph.nodeColor())
