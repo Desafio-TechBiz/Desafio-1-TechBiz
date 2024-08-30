@@ -17,6 +17,7 @@ const PathSelectGraph = ({ nodeMode }) => {
 
     const Graph = ForceGraph3D()(graphRef.current)
       .graphData(gData)
+      .nodeColor((node) => selectedNodes.has(node) ? colors.pink : colors.comment)
       .linkColor((link) =>
         selectedNodes.has(link.source) && selectedNodes.has(link.target)
           ? colors.purple
