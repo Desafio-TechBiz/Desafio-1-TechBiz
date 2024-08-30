@@ -4,11 +4,12 @@ import ia from "../assets/image/ia.svg";
 import EntitySearch from "./EntitySearch"
 import { createNode} from '../../store/Slices/newNodeSlice.js';
 import { useDispatch, useSelector } from 'react-redux';
+import { toggleButton } from '../../store/Slices/menuSlice.js';
 
 // Dados fictícios
 const entities = [
   { id: 1, name: "Pessoa", value: "Maria Clara" },
-  { id: 4, name: "Empresa", value: "11111111111" },
+  { id: 4, name: "Empresa", value: "TechCorp" },
   { id: 2, name: "E-mail", value: "@" },
   { id: 3, name: "Telefone", value: "(99)9999-9999" },
   // { id: 5, name: "Pessoa Epsilon", value: "56789012" },
@@ -90,6 +91,7 @@ const SelectionBox = () => {
     role: '', // Defina valores padrão ou deixe vazio se não for usado
     img_path: '', // Defina valores padrão ou deixe vazio se não for usado
   });
+  
   const dispatch = useDispatch();
 
 
@@ -111,14 +113,16 @@ const SelectionBox = () => {
   };
 
   const handleSelect = (entity) => {
-    const node = {
-      id: entity.id,
-      type: entity.name,
-      name: searchTerm,
-      role: '', // Defina o valor adequado se for usado
-      img_path: '', // Defina o valor adequado se for usado
-    }
-    dispatch(createNode(node));
+    // const node = {
+    //   id: entity.id,
+    //   type: entity.name,
+    //   name: searchTerm,
+    //   role: '', // Defina o valor adequado se for usado
+    //   img_path: '', // Defina o valor adequado se for usado
+    // }
+    dispatch(toggleButton('createNode'));
+
+    // dispatch(createNode(node));
     setSearchTerm('');
     setFilteredEntities([]);
     setIsListVisible(false);

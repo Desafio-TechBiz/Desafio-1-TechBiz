@@ -37,12 +37,11 @@ export const Title = styled.h3`
 
 export const CloseButton = styled.button`
   background: none;
+  margin-left: 40px;
   border: none;
   color: white;
   font-size: 30px;
   cursor: pointer;
-  position: absolute;
-  right: 0; 
   &:hover {
     background-color: transparent; 
   }

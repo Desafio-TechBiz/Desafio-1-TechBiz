@@ -9,11 +9,11 @@ import {
 import fraudData from "../../data/fraud";
 import valueColor from "../../utils/valueColor";
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 import colors from "../../styles/variables";
 import TransformBoard from "../TransformBoard";
 import InfoBoard from "../InfoBoard";
-import CreateEntitiesBoard from "../CreateEntitiesBoard"
+import CreateEntitiesBoard from "../CreateEntitiesBoard";
 
 function filterNodesByLinkValueRange(data, minValue, malue) {
 
@@ -58,6 +58,78 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
   const [createNode, setCreateNode] = useState(false);
   const [links, setLinks] = useState([]);
   const newNode = useSelector((state) => state.node.node);
+  const button = useSelector((state) => state.menu);
+
+  const createTransform = button.createTransform;
+  const createNewNode = button.createNode;
+  const changeGraphMode = button.changeGraphMode;
+
+  const staticNode = {
+    id: 0,
+    type: "empresa",
+    name: "TechCorp",
+    role: "Empresa Envolvida",
+    img_path: "/imgs/techcorp.jpg",
+    neighbors: [],
+  };
+
+  const staticTransfrom = {
+    nodes: [
+      {
+        id: 0,
+        type: "empresa",
+        name: "TechCorp",
+        role: "Empresa Envolvida",
+        img_path: "/imgs/techcorp.jpg",
+        neighbors: [],
+      },
+      {
+        id: 1,
+        type: "pessoa",
+        name: "Alice Smith",
+        role: "Suspeita",
+        img_path: "/imgs/alice_smith.jpg",
+        neighbors: [],
+      },
+      {
+        id: 2,
+        type: "pessoa",
+        name: "Clara Adams",
+        role: "Contadora",
+        img_path: "/imgs/clara_adams.jpg",
+        neighbors: [],
+      },
+      {
+        id: 3,
+        type: "pessoa",
+        name: "Carlos Silva",
+        role: "Gerente de Projetos",
+        img_path: "/imgs/carlos_silva.jpg",
+        neighbors: [],
+      },
+    ],
+    links: [
+      {
+        source: 1,
+        target: 0,
+        relationship: "Associada a",
+        value: 9,
+      },
+      {
+        source: 0,
+        target: 2,
+        relationship: "Responsável pelas Finanças de",
+        value: 7,
+      },
+      {
+        source: 0,
+        target: 3,
+        relationship: "Gerencia Projetos em",
+        value: 6,
+      },
+    ],
+  };
+
   const handleMouseMove = (event) => {
     if (hoverNode && !clickNode) {
       setModalPosition({
@@ -76,20 +148,26 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
       const addNode = () => {
         const { nodes, links } = Graph.graphData();
         // Cria um novo nó com informações estáticas
-        const newN = {
-          id: nodes.length, // ID único baseado no número de nós existentes
-          type: newNode?.type,
-          name: newNode?.name, // Nome padrão
-          role: "Nova Função", // Função padrão
-          img_path: "/imgs/default.jpg", // Caminho da imagem padrão
-          neighbors: null
-        };
-      
+        const newN = staticNode;
+
         // Atualiza o grafo com o novo nó
         Graph.graphData({
           nodes: [...nodes, newN],
-          links: [...links] 
+          links: [...links],
         });
+      };
+
+      const addTransform = () => {
+        const { nodes, links } = Graph.graphData();
+        // Cria um novo nó com informações estáticas
+        const newTransform = staticTransfrom;
+
+        // Atualiza o grafo com o novo nó
+        Graph.graphData(filterNodesByLinkValueRange(fraudData, filterPiso));
+      };
+
+      const addAllTransformsInvestigation = () => {
+        Graph.graphData(filterNodesByLinkValueRange(fraudData, filterPiso));
       };
 
       const removeNode = (node) => {
@@ -104,8 +182,7 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
 
       const highlightNodes = new Set();
       const highlightLinks = new Set();
-      const gData = filterNodesByLinkValueRange(fraudData, filterPiso);
-      
+
       // gData.links.forEach(link => {
       //   console.log(gData)
       //   const a = gData.nodes[link.source];
@@ -126,8 +203,8 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
       const Graph = ForceGraph3D({
         extraRenderers: [new CSS2DRenderer()],
       })(graphRef.current)
-        .graphData(gData)
-        .backgroundColor('#282A36')
+        // .graphData(gData)
+        .backgroundColor("#282A36")
         .onNodeClick((node) => {
           if (clickNode && clickNode.id === node.id) {
             setClickNode(null);
@@ -164,6 +241,7 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
               : "rgba(255,160,0,0.8)"
             : "rgba(0,255,255,0.6)"
         )
+        .onBackgroundRightClick(() => addAllTransformsInvestigation())
         .linkColor(valueColor)
         .linkOpacity(0.6)
         .linkWidth((link) => (highlightLinks.has(link) ? 2 : 1))
@@ -172,26 +250,31 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
         .onNodeHover((node) => {
           // Update hover state
           if (!clickNode) {
-          if (node) {
-            highlightNodes.clear();
-            highlightLinks.clear();
-            highlightNodes.add(node);
-            if(node.neighbors){
-              node.neighbors.forEach((neighbor) => highlightNodes.add(neighbor));
-              node.links.forEach((link) => highlightLinks.add(link));
+            if (node) {
+              highlightNodes.clear();
+              highlightLinks.clear();
+              highlightNodes.add(node);
+              if (node.neighbors) {
+                node.neighbors.forEach((neighbor) =>
+                  highlightNodes.add(neighbor)
+                );
+                if (node.links) {
+                  node.links.forEach((link) => highlightLinks.add(link));
+                }
+              }
+
+              // Update modal position
+              //   setModalPosition({
+              //     x: window.event.clientX + 10,
+              //     y: window.event.clientY + 10,
+              //   });
             }
 
-            // Update modal position
-            //   setModalPosition({
-            //     x: window.event.clientX + 10,
-            //     y: window.event.clientY + 10,
-            //   });
+            setHoverNode(node);
+
+            updateHighlight();
           }
-
-          setHoverNode(node);
-
-          updateHighlight();
-        }})
+        })
         .onLinkHover((link) => {
           highlightNodes.clear();
           highlightLinks.clear();
@@ -205,7 +288,8 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
           updateHighlight();
         })
         .onBackgroundClick(() => {
-          setCreateNode(prevState => !prevState);
+          setCreateNode((prevState) => !prevState);
+          setClickNode(false);
           // addNode()
         })
         .onNodeRightClick(removeNode)
@@ -228,7 +312,7 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
           Object.assign(sprite.position, middlePos);
         });
 
-      if (nodeModeValue === "basic") {
+      if (button.changeGraphMode) {
         Graph.nodeThreeObject((node) => {
           const nodeEl = document.createElement("div");
           nodeEl.textContent = node.name;
@@ -241,9 +325,7 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
           nodeEl.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
           return new CSS2DObject(nodeEl);
         }).nodeThreeObjectExtend(true);
-      }
-
-      if (nodeModeValue === "img") {
+      } else {
         Graph.nodeThreeObject((node) => {
           const imgTexture = new THREE.TextureLoader().load(
             node.img_path ? node.img_path : "no_img.png"
@@ -262,9 +344,13 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
           .linkWidth(Graph.linkWidth())
           .linkDirectionalParticles(Graph.linkDirectionalParticles());
       }
-      if(newNode){
+      if (createNewNode) {
         addNode();
-        setCreateNode(false)
+        setCreateNode(false);
+      }
+      if (createTransform) {
+        addTransform();
+        setClickNode(false);
       }
       return () => {
         Graph._destructor();
@@ -272,13 +358,13 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
     };
 
     getData();
-    
-  }, [newNode]);
+    // if(closeTransform){
+    //   setClickNode(false)
+    // }
+  }, [newNode, createTransform, createNewNode, changeGraphMode]);
 
-  
   return (
     <div onMouseMove={handleMouseMove}>
-      
       <div
         ref={graphRef}
         style={{
@@ -286,7 +372,6 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
           width: "100%",
           left: 0,
           pointerEvents: clickNode ? "none" : "auto",
-          
         }}
       />
       {hoverNode && !clickNode && (
@@ -328,7 +413,7 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
             pointerEvents: "auto",
           }}
         >
-          <CreateEntitiesBoard/>
+          <CreateEntitiesBoard />
         </div>
       )}
     </div>

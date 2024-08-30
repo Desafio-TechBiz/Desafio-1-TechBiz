@@ -3,6 +3,7 @@ import * as S from './styles';
 import * as Icons from '../../assets/image';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleButton } from '../../../store/Slices/menuSlice.js';
+import BurstModeIcon from '@mui/icons-material/BurstMode';
 
 
 function generateInvestigationReport(data) {
@@ -56,7 +57,7 @@ const FloatingButtons = ({setFilterPiso}) => {
 
   const handleButtonClick = (button) => {
     dispatch(toggleButton(button));
-
+    
     if (button === 'filter') {
       setShowMenu(!showMenu);
       if (showRoute) setShowRoute(false); 
@@ -99,6 +100,9 @@ const FloatingButtons = ({setFilterPiso}) => {
   return (
     <>
       <S.FloatingButtonContainer>
+      <S.FloatingButton style={{marginBottom: '20px', backgroundColor: 'rgba(140, 140, 191, 1)'}} onClick={() => handleButtonClick('changeGraphMode')}>
+          <BurstModeIcon/>
+        </S.FloatingButton>
         <S.ButtonRow>
           <S.FloatingButton 
             onClick={() => handleButtonClick('target')} 
@@ -113,6 +117,7 @@ const FloatingButtons = ({setFilterPiso}) => {
             </S.FloatingButtonTarget>
           )}
         </S.ButtonRow>
+        
         <S.FloatingButton 
         onClick={() => handleButtonClick('filter')}
         isActive={activeButton === 'filter'}>

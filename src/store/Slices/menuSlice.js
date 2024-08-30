@@ -9,7 +9,10 @@ const menuSlice = createSlice({
     zoomOut: false,
     expand: false,
     download: false,
-    filter: false
+    filter: false,
+    createNode: false,
+    createTransform: false,
+    changeGraphMode: false
   },
   reducers: {
     toggleButton: (state, action) => {
@@ -22,6 +25,7 @@ const menuSlice = createSlice({
       }
       // Ativa o botão apenas se não estava ativo
       state[button] = !isActive;
+      console.log('action',state[button],!isActive )
     }
   }
 });
