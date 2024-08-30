@@ -14,3 +14,4 @@ export { default as PointIcon } from './point.svg';
 export { default as PointInIcon } from './pointIn.svg';
 export { default as AddIcon } from './add.svg';
 export { default as StarIcon } from './start.svg';
+export {default as TriDIcon} from './logo.png';

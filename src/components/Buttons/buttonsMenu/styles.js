@@ -19,7 +19,7 @@ export const ButtonRow = styled.div`
 export const FloatingButton = styled.button`
   width: 50px;
   height: 50px;
-  background-color: #6765A6;
+  background-color: ${({ isActive }) => (isActive ? '#44475A' : '#6765A6')};
   border: none;
   border-radius: 8px;
   display: flex;
@@ -42,11 +42,10 @@ export const FloatingButton = styled.button`
     width: 30px;
     height: 30px;
   }
-
 `;
 
 export const FloatingButtonTarget = styled(FloatingButton)`
-  background-color: #6765A6;
+  background-color: ${({ isActive }) => (isActive ? '#44475A' : '#6765A6')};
 `;
 
 export const SidebarMenu = styled.div`
@@ -54,12 +53,10 @@ export const SidebarMenu = styled.div`
   left: 60px;
   top: 52%;
   transform: translateY(-50%);
-//   background-color: #282A36;
-background-color:rgba(0,  0,  0,  0);
+  background-color: rgba(0, 0, 0, 0);
   width: 300px;
   padding: 15px;
   border-radius: 8px;
-//   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   color: white;
   z-index: 1000;
 `;
@@ -69,12 +66,10 @@ export const SidebarRoute = styled.div`
   left: 60px;
   top: 49%;
   transform: translateY(-50%);
-//   background-color: #282A36;
-background-color:rgba(0,  0,  0,  0);
+  background-color: rgba(0, 0, 0, 0);
   width: 300px;
   padding: 15px;
   border-radius: 8px;
-//   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   color: white;
   z-index: 1000;
 `;
@@ -88,7 +83,6 @@ export const SearchBarContainer = styled.div`
   margin-bottom: 10px;
 
   img {
-    //margin-left: auto; 
     margin-right: 10px; 
     width: 20px;
     height: 20px;
@@ -107,17 +101,6 @@ export const SearchInput = styled.input`
 
   &:focus {
     outline: none;
-  }
-`;
-
-export const SearchButton = styled.button`
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-
-  &:hover {
-    color: #ffffff;
   }
 `;
 
@@ -151,5 +134,3 @@ export const MenuItem = styled.div`
     height: 10px;
   }
 `;
-
-

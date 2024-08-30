@@ -1,41 +1,44 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button } from '@mui/material';
+import { AppBar, Toolbar } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import NewInvestigationButton from "../Buttons/NewInvestigationButton.js"
-import ThemeToggleButton from "../Buttons/ThemeToggleButton.js" 
-import Upload from "../Buttons/Upload.js"
-import ProjectNameInput from "../Inputs/ProjectNameInput.js"
+import NewInvestigationButton from "../Buttons/NewInvestigationButton.js";
+import Upload from "../Buttons/Upload.js";
+import ProjectNameInput from "../Inputs/ProjectNameInput.js";
+import TriDIcon from '../assets/image/logo.png'; // Verifique o caminho correto
+
 export const CustomAppBar = styled(AppBar)(({ theme }) => ({
-  // backgroundColor: theme.palette.secondary.main,
-  backgroundColor: "rgba(56, 59, 75, 0.53)",
-  boxShadow: '1',// 
-  height: 70, 
+  backgroundColor: "#142142",
+  boxShadow: '1',
+  height: 70,
   display: 'flex',
   justifyContent: 'space-between',
-  alignContent: 'center',
+  alignItems: 'center', 
   position: 'fixed',
-  zIndex: '1000'
+  zIndex: '1000',
+  padding: '0 20px', 
 }));
 
+const LogoImage = styled('img')({
+  width: '300px', 
+  height: 'auto',
+  marginLeft: '-90px'
+});
 
 const Header = () => {
   return (
     <>
-    <CustomAppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1, color: '#fff' }}>
-          INVESTIGATE
-        </Typography>
-        <div style={{display: 'flex', justifyContent: 'end', width:'30%' }} >
-        {/* <ThemeToggleButton/> */}
-        <Upload/>
-        <NewInvestigationButton variant="contained">Login</NewInvestigationButton>
-        </div>
-      </Toolbar>
-    </CustomAppBar>
-    <ProjectNameInput/>
+      <CustomAppBar position="static">
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <LogoImage src={TriDIcon} alt="Logo" />
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Upload />
+            <NewInvestigationButton variant="contained">Login</NewInvestigationButton>
+          </div>
+        </Toolbar>
+      </CustomAppBar>
+      <ProjectNameInput />
     </>
-
   );
 };
 
