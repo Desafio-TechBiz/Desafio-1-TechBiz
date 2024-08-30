@@ -9,7 +9,7 @@ import {
 import fraudData from "../../data/fraud";
 import valueColor from "../../utils/valueColor";
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
-
+import { useSelector } from 'react-redux';
 import colors from "../../styles/variables";
 import TransformBoard from "../TransformBoard";
 import InfoBoard from "../InfoBoard";
@@ -20,9 +20,9 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
   const [hoverNode, setHoverNode] = useState(null);
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
   const [clickNode, setClickNode] = useState(null);
-  const [createNode, setCreateNode] = useState(null);
+  const [createNode, setCreateNode] = useState(false);
   const [links, setLinks] = useState([]);
-
+  const newNode = useSelector((state) => state.node.node);
   const handleMouseMove = (event) => {
     if (hoverNode && !clickNode) {
       setModalPosition({
@@ -38,16 +38,22 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const addNode = async (bg) => {
+      const addNode = () => {
         const { nodes, links } = Graph.graphData();
-        const id = nodes.length;
-        // const { newNodeId, newLinks } = await createNode();
+        // Cria um novo nó com informações estáticas
+        const newN = {
+          id: nodes.length, // ID único baseado no número de nós existentes
+          type: newNode?.type,
+          name: newNode?.name, // Nome padrão
+          role: "Nova Função", // Função padrão
+          img_path: "/imgs/default.jpg", // Caminho da imagem padrão
+          neighbors: null
+        };
+      
+        // Atualiza o grafo com o novo nó
         Graph.graphData({
-          nodes: [...nodes, { id }],
-          links: [
-            ...links,
-            { source: id, target: Math.round(Math.random() * (id - 1)) },
-          ],
+          nodes: [...nodes, newN],
+          links: [...links] 
         });
       };
 
@@ -68,15 +74,16 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
       gData.links.forEach(link => {
         const a = gData.nodes[link.source];
         const b = gData.nodes[link.target];
-        !a.neighbors && (a.neighbors = []);
-        !b.neighbors && (b.neighbors = []);
-        a.neighbors.push(b);
-        b.neighbors.push(a);
-  
-        !a.links && (a.links = []);
-        !b.links && (b.links = []);
-        a.links.push(link);
-        b.links.push(link);
+        if(a || b){
+          !a?.neighbors && (a.neighbors = []);
+          !b?.neighbors && (b.neighbors = []);
+          a.neighbors.push(b);
+          b.neighbors.push(a);
+          !a.links && (a.links = []);
+          !b.links && (b.links = []);
+          a.links.push(link);
+          b.links.push(link);
+        }
       });
   
 
@@ -133,9 +140,10 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
             highlightNodes.clear();
             highlightLinks.clear();
             highlightNodes.add(node);
-            console.log(node);
-            node.neighbors.forEach((neighbor) => highlightNodes.add(neighbor));
-            node.links.forEach((link) => highlightLinks.add(link));
+            if(node.neighbors){
+              node.neighbors.forEach((neighbor) => highlightNodes.add(neighbor));
+              node.links.forEach((link) => highlightLinks.add(link));
+            }
 
             // Update modal position
             //   setModalPosition({
@@ -161,7 +169,7 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
           updateHighlight();
         })
         .onBackgroundClick(() => {
-          setCreateNode(true)
+          setCreateNode(prevState => !prevState);
           // addNode()
         })
         .onNodeRightClick(removeNode)
@@ -218,17 +226,23 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
           .linkWidth(Graph.linkWidth())
           .linkDirectionalParticles(Graph.linkDirectionalParticles());
       }
-
+      if(newNode){
+        addNode();
+        setCreateNode(false)
+      }
       return () => {
         Graph._destructor();
       };
     };
 
     getData();
-  }, []);
+    
+  }, [newNode]);
 
+  
   return (
     <div onMouseMove={handleMouseMove}>
+      
       <div
         ref={graphRef}
         style={{
