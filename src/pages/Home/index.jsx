@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import Graph3D from '../../components/Graph';
 const Home = () => {
   const buttonsState = useSelector((state) => state.menu);
-  const [filterPiso, setFilterPiso] = useState(7.5);
+  const [filterPiso, setFilterPiso] = useState(0);
 
   const isSelected = () => {
     if(buttonsState.target){

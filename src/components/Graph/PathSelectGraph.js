@@ -60,8 +60,24 @@ function filterNodesByLinkValueRange(data, minValue, malue) {
 
   const filteredNodeIds = new Set();
   filteredLinks.forEach((link) => {
-    filteredNodeIds.add(link.source);
-    filteredNodeIds.add(link.target);
+    filteredNodeIds.add(fraudData.nodes.find(node => node.id === link.source));
+    filteredNodeIds.add(fraudData.nodes.find(node => node.id === link.target));
+  });
+
+  filteredLinks.forEach(link => {
+
+    const a = filteredNodeIds[link.source];
+    const b = filteredNodeIds[link.target];
+    if(a || b){
+      !a?.neighbors && (a.neighbors = []);
+      !b?.neighbors && (b.neighbors = []);
+      a.neighbors.push(b);
+      b.neighbors.push(a);
+      !a.links && (a.links = []);
+      !b.links && (b.links = []);
+      a.links.push(link);
+      b.links.push(link);
+    }
   });
 
   return {

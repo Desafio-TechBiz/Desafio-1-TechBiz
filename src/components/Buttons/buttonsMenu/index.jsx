@@ -135,7 +135,7 @@ const FloatingButtons = ({setFilterPiso}) => {
         </S.FloatingButton>
       </S.FloatingButtonContainer>
 
-      {showMenu && (
+      {/* {showMenu && (
         <S.SidebarMenu>
           <S.SearchBarContainer>
             <S.SearchInput placeholder="Pesquisar entidade..." />
@@ -177,7 +177,7 @@ const FloatingButtons = ({setFilterPiso}) => {
             <img src={Icons.PhoneIcon} alt="Telefone" />
           </S.MenuItem>
         </S.SidebarMenu>
-      )}
+      )} */}
 
       {showRoute && (
         <S.SidebarRoute>

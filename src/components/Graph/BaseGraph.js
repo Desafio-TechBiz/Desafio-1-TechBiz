@@ -15,42 +15,7 @@ import TransformBoard from "../TransformBoard";
 import InfoBoard from "../InfoBoard";
 import CreateEntitiesBoard from "../CreateEntitiesBoard";
 
-function filterNodesByLinkValueRange(data, minValue, malue) {
-
-  const filteredLinks = data.links.filter(
-    (link) => link.value >= minValue && link.value <= 10
-  );
-
-  const filteredNodeIds = new Set();
-  filteredLinks.forEach((link) => {
-    filteredNodeIds.add(fraudData.nodes.find(node => node.id === link.source));
-    filteredNodeIds.add(fraudData.nodes.find(node => node.id === link.target));
-  });
-
-  filteredLinks.forEach(link => {
-
-    const a = filteredNodeIds[link.source];
-    const b = filteredNodeIds[link.target];
-    if(a || b){
-      !a?.neighbors && (a.neighbors = []);
-      !b?.neighbors && (b.neighbors = []);
-      a.neighbors.push(b);
-      b.neighbors.push(a);
-      !a.links && (a.links = []);
-      !b.links && (b.links = []);
-      a.links.push(link);
-      b.links.push(link);
-    }
-  });
-
-  return {
-    nodes: Array.from(filteredNodeIds),
-    links: filteredLinks,
-  };
-}
-
-
-const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
+const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
   const graphRef = useRef();
   const [hoverNode, setHoverNode] = useState(null);
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
@@ -163,11 +128,11 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
         const newTransform = staticTransfrom;
 
         // Atualiza o grafo com o novo nó
-        Graph.graphData(filterNodesByLinkValueRange(fraudData, filterPiso));
+        Graph.graphData(newTransform);
       };
 
       const addAllTransformsInvestigation = () => {
-        Graph.graphData(filterNodesByLinkValueRange(fraudData, filterPiso));
+        Graph.graphData(fraudData);
       };
 
       const removeNode = (node) => {
@@ -182,23 +147,22 @@ const BaseGraph = ({ createNodeValue, nodeModeValue, filterPiso }) => {
 
       const highlightNodes = new Set();
       const highlightLinks = new Set();
+      const gData = fraudData;
 
-      // gData.links.forEach(link => {
-      //   console.log(gData)
-      //   const a = gData.nodes[link.source];
-      //   const b = gData.nodes[link.target];
-      //   if(a || b){
-      //     !a?.neighbors && (a?.neighbors = []);
-      //     !b?.neighbors && (b?.neighbors = []);
-      //     a.neighbors.push(b);
-      //     b.neighbors.push(a);
-      //     !a.links && (a.links = []);
-      //     !b.links && (b.links = []);
-      //     a.links.push(link);
-      //     b.links.push(link);
-      //   }
-      // });
-  
+      gData.links.forEach((link) => {
+        const a = gData.nodes[link.source];
+        const b = gData.nodes[link.target];
+        if (a || b) {
+          !a?.neighbors && (a.neighbors = []);
+          !b?.neighbors && (b.neighbors = []);
+          a.neighbors.push(b);
+          b.neighbors.push(a);
+          !a.links && (a.links = []);
+          !b.links && (b.links = []);
+          a.links.push(link);
+          b.links.push(link);
+        }
+      });
 
       const Graph = ForceGraph3D({
         extraRenderers: [new CSS2DRenderer()],
