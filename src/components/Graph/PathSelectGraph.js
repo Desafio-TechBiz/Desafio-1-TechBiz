@@ -113,7 +113,7 @@ const PathSelectGraph = ({ nodeMode, filterPiso }) => {
   const [clickNode, setClickNode] = useState(null);
 
   useEffect(() => {
-    const gData = filterNodesByLinkValueRange(fraudData, filterPiso);
+    const gData = fraudData;
     let selectedNodes = new Set();
 
     const Graph = ForceGraph3D()(graphRef.current)
