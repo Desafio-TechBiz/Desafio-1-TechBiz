@@ -46,11 +46,12 @@ function generateInvestigationReport(data) {
       console.log(report);
     return report;
 }
-const FloatingButtons = () => {
+const FloatingButtons = ({setFilterPiso}) => {
   const [showMenu, setShowMenu] = React.useState(false);
   const [showRoute, setShowRoute] = React.useState(false);
   const [showDownload, setShowDownload] = React.useState(false);
   const dispatch = useDispatch();
+  
 
   const handleButtonClick = (button) => {
     dispatch(toggleButton(button));
@@ -89,6 +90,11 @@ const FloatingButtons = () => {
     }
   };
 
+  const handleFilterClick = (value) => {
+
+    setFilterPiso(value)
+
+  }
   return (
     <>
       <S.FloatingButtonContainer>
@@ -179,6 +185,34 @@ const FloatingButtons = () => {
             </S.FloatingButtonTarget>
           )}
         </S.SidebarRoute>
+      )}
+      {showMenu && (
+        <S.SidebarMenu>
+          <S.MenuItem 
+            onClick={() => handleFilterClick(7.5)}
+        > {/* Verifica se é o filtro ativo */}
+            <span>Vinculo Muito Forte</span>
+            <img src={Icons.PointIcon} alt="Point" />
+          </S.MenuItem>
+          <S.MenuItem 
+            onClick={() => handleFilterClick(5.0)}
+        > {/* Verifica se é o filtro ativo */}
+            <span>Vinculo Forte</span>
+            <img src={Icons.PointIcon} alt="Point" />
+          </S.MenuItem>
+          <S.MenuItem 
+            onClick={() => handleFilterClick(2.5)}
+          > {/* Verifica se é o filtro ativo */}
+            <span>Vinculo Moderado</span>
+            <img src={Icons.PointIcon} alt="Point" />
+          </S.MenuItem>
+          <S.MenuItem 
+            onClick={() => handleFilterClick(0)}
+          > {/* Verifica se é o filtro ativo */}
+            <span>Vinculo Fraco</span>
+            <img src={Icons.PointIcon} alt="Point" />
+          </S.MenuItem>
+        </S.SidebarMenu>
       )}
     </>
   );

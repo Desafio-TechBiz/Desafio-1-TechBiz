@@ -7,9 +7,9 @@ import valueColor from "../../utils/valueColor";
 
 import * as THREE from "three";
 import {
-  CSS2DRenderer,
-  CSS2DObject,
-} from "three/examples/jsm/renderers/CSS2DRenderer";
+  CSS2DRenderer, CSS2DObject,
+} from 'three/examples/jsm/renderers/CSS2DRenderer';
+
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
 import SpriteText from "three-spritetext";
 import InfoBoard from "../InfoBoard";
@@ -52,7 +52,7 @@ function generateInvestigationReport(fraudData, selectedNodeIds) {
   return report;
 }
 
-const intervals = [0, 2.5, 5.0, 7.5];
+
 function filterNodesByLinkValueRange(data, minValue, malue) {
   const filteredLinks = data.links.filter(
     (link) => link.value >= minValue && link.value <= 10
@@ -69,6 +69,9 @@ function filterNodesByLinkValueRange(data, minValue, malue) {
     links: filteredLinks,
   };
 }
+
+
+
 const handleSaveToLocalStorage = (nodes) => {
   const data = fraudData.nodes.filter((node) => nodes.includes(node.id));
   const filteredNodes = data.map((node) => {
@@ -86,11 +89,12 @@ const handleSaveToLocalStorage = (nodes) => {
   ); // Salva o estado no localStorage
 };
 
-const PathSelectGraph = ({ nodeMode }) => {
+
+
+const PathSelectGraph = ({ nodeMode, filterPiso }) => {
   const graphRef = useRef();
   const [hoverNode, setHoverNode] = useState(null);
   const [clickNode, setClickNode] = useState(null);
-  const [filterPiso, setFilterPiso] = useState(7.5);
 
   useEffect(() => {
     const gData = filterNodesByLinkValueRange(fraudData, filterPiso);
@@ -239,7 +243,7 @@ const PathSelectGraph = ({ nodeMode }) => {
       // Clean up the graph instance when the component is unmounted
       Graph._destructor();
     };
-  }, []);
+  }, [filterPiso]);
 
   return (
     <div ref={graphRef} style={{ width: "100vw", height: "100vh", margin: 0 }}>

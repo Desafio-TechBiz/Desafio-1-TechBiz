@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
 import BaseGraph from "./BaseGraph";
 import SuspectSelectGraph from "./SuspectSelectGraph";
@@ -10,11 +10,12 @@ const componentsDictionary = {
   paths: PathSelectGraph,
 };
 
-const Graph = ({ selected }) => {
+const Graph = ({ selected, filterPiso }) => {
+
   const SelectedGraph = componentsDictionary[selected];
   return (
     <div style={{maxHeight: '100vh', maxWidth: '100vw'}}>
-      <SelectedGraph />
+      <SelectedGraph nodeMode={'basic'} filterPiso={filterPiso}/>
     </div>
   );
 };
