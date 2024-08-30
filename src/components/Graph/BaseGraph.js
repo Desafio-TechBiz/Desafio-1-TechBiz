@@ -40,15 +40,14 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
     const getData = async () => {
       const addNode = () => {
         const { nodes, links } = Graph.graphData();
-        console.log(nodes)
         // Cria um novo nó com informações estáticas
         const newN = {
-          id: `pessoa_${nodes.length + 1}`, // ID único baseado no número de nós existentes
+          id: nodes.length, // ID único baseado no número de nós existentes
           type: newNode?.type,
           name: newNode?.name, // Nome padrão
           role: "Nova Função", // Função padrão
           img_path: "/imgs/default.jpg", // Caminho da imagem padrão
-          neighbors: []
+          neighbors: null
         };
       
         // Atualiza o grafo com o novo nó
@@ -75,15 +74,16 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
       gData.links.forEach(link => {
         const a = gData.nodes[link.source];
         const b = gData.nodes[link.target];
-        !a.neighbors && (a.neighbors = []);
-        !b.neighbors && (b.neighbors = []);
-        a.neighbors.push(b);
-        b.neighbors.push(a);
-  
-        !a.links && (a.links = []);
-        !b.links && (b.links = []);
-        a.links.push(link);
-        b.links.push(link);
+        if(a || b){
+          !a?.neighbors && (a.neighbors = []);
+          !b?.neighbors && (b.neighbors = []);
+          a.neighbors.push(b);
+          b.neighbors.push(a);
+          !a.links && (a.links = []);
+          !b.links && (b.links = []);
+          a.links.push(link);
+          b.links.push(link);
+        }
       });
   
 
@@ -140,9 +140,10 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
             highlightNodes.clear();
             highlightLinks.clear();
             highlightNodes.add(node);
-            console.log(node);
-            node.neighbors.forEach((neighbor) => highlightNodes.add(neighbor));
-            node.links.forEach((link) => highlightLinks.add(link));
+            if(node.neighbors){
+              node.neighbors.forEach((neighbor) => highlightNodes.add(neighbor));
+              node.links.forEach((link) => highlightLinks.add(link));
+            }
 
             // Update modal position
             //   setModalPosition({
@@ -225,9 +226,9 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
           .linkWidth(Graph.linkWidth())
           .linkDirectionalParticles(Graph.linkDirectionalParticles());
       }
-
       if(newNode){
         addNode();
+        setCreateNode(false)
       }
       return () => {
         Graph._destructor();
