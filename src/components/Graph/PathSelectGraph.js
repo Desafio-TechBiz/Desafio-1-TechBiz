@@ -1,35 +1,128 @@
 import ForceGraph3D from "3d-force-graph";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import fraudData from "../../data/fraud";
 import colors from "../../styles/variables";
 import valueColor from "../../utils/valueColor";
 
 import * as THREE from "three";
-import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
+import {
+  CSS2DRenderer, CSS2DObject,
+} from 'three/examples/jsm/renderers/CSS2DRenderer';
+
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
 import SpriteText from "three-spritetext";
-const PathSelectGraph = ({ nodeMode }) => {
+import InfoBoard from "../InfoBoard";
+
+function generateInvestigationReport(fraudData, selectedNodeIds) {
+  const { nodes, links } = fraudData;
+
+  // Inicializar o relatório
+  let report = "Relatório de Investigação:\n";
+
+  // Mapa para acessar informações dos nós pelo ID
+  const nodesMap = new Map(nodes.map((node) => [node.id, node]));
+
+  // Adicionar informações sobre os nós selecionados
+  report +=
+    "O caminho de investigação selecionado inclui os seguintes elementos:\n";
+  selectedNodeIds.forEach((id) => {
+    if (nodesMap.has(id)) {
+      const node = nodesMap.get(id);
+      report += `- ${node.name} (${node.role}): Tipo - ${node.type}\n`;
+    }
+  });
+
+  // Adicionar informações sobre as conexões entre os nós selecionados
+  report += "\nConexões entre os elementos selecionados:\n";
+  links.forEach((link) => {
+    const { source, target, relationship } = link;
+    if (selectedNodeIds.includes(source) && selectedNodeIds.includes(target)) {
+      const sourceNode = nodesMap.get(source);
+      const targetNode = nodesMap.get(target);
+      report += `- ${sourceNode.name} está ${relationship} ${targetNode.name}\n`;
+    }
+  });
+
+  // Conclusão do relatório
+  report += "\nConclusão:\n";
+  report +=
+    "Este caminho de investigação mostra uma série de conexões e interações entre os elementos selecionados, indicando possíveis relações de interesse para a investigação.\n";
+
+  return report;
+}
+
+
+function filterNodesByLinkValueRange(data, minValue, malue) {
+  const filteredLinks = data.links.filter(
+    (link) => link.value >= minValue && link.value <= 10
+  );
+
+  const filteredNodeIds = new Set();
+  filteredLinks.forEach((link) => {
+    filteredNodeIds.add(link.source);
+    filteredNodeIds.add(link.target);
+  });
+
+  return {
+    nodes: Array.from(filteredNodeIds),
+    links: filteredLinks,
+  };
+}
+
+
+
+const handleSaveToLocalStorage = (nodes) => {
+  const data = fraudData.nodes.filter((node) => nodes.includes(node.id));
+  const filteredNodes = data.map((node) => {
+    return { id: node.id, role: node.role, type: node.type, name: node.name };
+  });
+
+
+  const links = fraudData.links.filter(
+    (link) => (nodes.includes(link.target.id) || nodes.includes(link.source.id))
+  ).map(link => {return {id: link.id, relationship: link.relationship, source: link.source.id, target: link.target.id }});
+
+  localStorage.setItem(
+    "relatorio",
+    JSON.stringify({ nodes: filteredNodes, links })
+  ); // Salva o estado no localStorage
+};
+
+
+
+const PathSelectGraph = ({ nodeMode, filterPiso }) => {
   const graphRef = useRef();
+  const [hoverNode, setHoverNode] = useState(null);
+  const [clickNode, setClickNode] = useState(null);
 
   useEffect(() => {
-    const gData = fraudData;
+    const gData = filterNodesByLinkValueRange(fraudData, filterPiso);
     let selectedNodes = new Set();
 
     const Graph = ForceGraph3D()(graphRef.current)
       .graphData(gData)
-      .nodeColor((node) => selectedNodes.has(node) ? colors.pink : colors.comment)
+      .nodeColor((node) =>
+        selectedNodes.has(node) ? colors.pink : colors.comment
+      )
       .linkColor((link) =>
         selectedNodes.has(link.source) && selectedNodes.has(link.target)
           ? colors.purple
           : valueColor(link)
       ) // Highlight links
       .linkOpacity(0.6)
+      .onNodeHover((node) => setHoverNode(node))
       .onNodeClick((node, event) => {
+        setHoverNode(false);
         if (event.ctrlKey || event.shiftKey || event.altKey) {
           // multi-selection
           selectedNodes.has(node)
             ? selectedNodes.delete(node)
             : selectedNodes.add(node);
+
+          handleSaveToLocalStorage(
+            Array.from(selectedNodes).map((node) => node.id)
+          );
         } else {
           // single-selection
           const untoggle = selectedNodes.has(node) && selectedNodes.size === 1;
@@ -150,13 +243,26 @@ const PathSelectGraph = ({ nodeMode }) => {
       // Clean up the graph instance when the component is unmounted
       Graph._destructor();
     };
-  }, []);
+  }, [filterPiso]);
 
   return (
-    <div
-      ref={graphRef}
-      style={{ width: "100vw", height: "100vh", margin: 0 }}
-    />
+    <div ref={graphRef} style={{ width: "100vw", height: "100vh", margin: 0 }}>
+      {" "}
+      {hoverNode && !clickNode && (
+        <div
+          className="modal"
+          style={{
+            position: "absolute",
+            left: "68vw",
+            top: "20vh",
+            zIndex: 1000,
+            pointerEvents: "none", // Permite que o mouse passe por cima do modal
+          }}
+        >
+          <InfoBoard />
+        </div>
+      )}
+    </div>
   );
 };
 
