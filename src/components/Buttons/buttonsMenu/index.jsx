@@ -11,7 +11,7 @@ const FloatingButtons = () => {
 
   const handleButtonClick = (button) => {
     dispatch(toggleButton(button));
-
+    
     if (button === 'filter') {
       setShowMenu(!showMenu);
       if (showRoute) setShowRoute(false); 

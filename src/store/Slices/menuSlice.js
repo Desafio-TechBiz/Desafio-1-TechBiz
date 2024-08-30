@@ -9,7 +9,9 @@ const menuSlice = createSlice({
     zoomOut: false,
     expand: false,
     download: false,
-    filter: false
+    filter: false,
+    createNode: false,
+    createTransform: false
   },
   reducers: {
     toggleButton: (state, action) => {
