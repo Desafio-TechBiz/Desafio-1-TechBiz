@@ -1,5 +1,5 @@
 import ForceGraph3D from "3d-force-graph";
-import { default as React, useEffect, useRef } from "react";
+import { default as React, useEffect, useRef, useState } from "react";
 import fraudData from "../../data/fraud";
 import valueColor from "../../utils/valueColor";
 import * as THREE from "three";
@@ -7,9 +7,11 @@ import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
 import colors from "../../styles/variables";
 import SpriteText from "three-spritetext";
+import InfoBoard from "../InfoBoard";
 const SuspectSelectGraph = ({ nodeMode }) => {
   const graphRef = useRef();
-
+  const [hoverNode, setHoverNode] = useState(null);
+  const [clickNode, setClickNode] = useState(null);
   useEffect(() => {
     const gData = fraudData;
     let selectedNodes = new Set();
@@ -20,6 +22,7 @@ const SuspectSelectGraph = ({ nodeMode }) => {
         selectedNodes.has(node) ? colors.pink : colors.comment
       )
       .onNodeClick((node, event) => {
+        setHoverNode(false);
         if (event.ctrlKey || event.shiftKey || event.altKey) {
           // multi-selection
           selectedNodes.has(node)
@@ -62,6 +65,7 @@ const SuspectSelectGraph = ({ nodeMode }) => {
             ); // unfix controlled nodes
         }
       })
+      .onNodeHover((node) => setHoverNode(node))
       .linkThreeObjectExtend(true)
       .linkThreeObject((link) => {
         // extend link with text sprite
@@ -138,7 +142,23 @@ const SuspectSelectGraph = ({ nodeMode }) => {
   }, []);
 
   return (
-    <div ref={graphRef} style={{ width: "100%", height: "100vh", margin: 0 }} />
+    <div ref={graphRef} style={{ width: "100%", height: "100vh", margin: 0 }}>
+      {" "}
+      {hoverNode && !clickNode && (
+        <div
+          className="modal"
+          style={{
+            position: "absolute",
+            left: "68vw",
+            top: "20vh",
+            zIndex: 1000,
+            pointerEvents: "none", // Permite que o mouse passe por cima do modal
+          }}
+        >
+          <InfoBoard />
+        </div>
+      )}
+    </div>
   );
 };
 

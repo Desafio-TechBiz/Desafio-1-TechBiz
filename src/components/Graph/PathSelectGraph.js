@@ -1,30 +1,57 @@
 import ForceGraph3D from "3d-force-graph";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import fraudData from "../../data/fraud";
 import colors from "../../styles/variables";
 import valueColor from "../../utils/valueColor";
 
 import * as THREE from "three";
-import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
 import SpriteText from "three-spritetext";
+import InfoBoard from "../InfoBoard";
+
+const intervals = [0, 2.5, 5.0, 7.5]
+function filterNodesByLinkValueRange(data, minValue, malue) {
+  const filteredLinks = data.links.filter(
+    (link) => link.value >= minValue && link.value <= 10
+  );
+
+  const filteredNodeIds = new Set();
+  filteredLinks.forEach((link) => {
+    filteredNodeIds.add(link.source);
+    filteredNodeIds.add(link.target);
+  });
+
+  return {
+    nodes:  Array.from(filteredNodeIds),
+    links: filteredLinks,
+  };
+}
+
 const PathSelectGraph = ({ nodeMode }) => {
   const graphRef = useRef();
+  const [hoverNode, setHoverNode] = useState(null);
+  const [clickNode, setClickNode] = useState(null);
+  const [filterPiso, setFilterPiso] = useState(7.5)
 
   useEffect(() => {
-    const gData = fraudData;
+    const gData = filterNodesByLinkValueRange(fraudData, filterPiso);
     let selectedNodes = new Set();
 
     const Graph = ForceGraph3D()(graphRef.current)
       .graphData(gData)
-      .nodeColor((node) => selectedNodes.has(node) ? colors.pink : colors.comment)
+      .nodeColor((node) =>
+        selectedNodes.has(node) ? colors.pink : colors.comment
+      )
       .linkColor((link) =>
         selectedNodes.has(link.source) && selectedNodes.has(link.target)
           ? colors.purple
           : valueColor(link)
       ) // Highlight links
       .linkOpacity(0.6)
+      .onNodeHover((node) => setHoverNode(node))
       .onNodeClick((node, event) => {
+        setHoverNode(false);
         if (event.ctrlKey || event.shiftKey || event.altKey) {
           // multi-selection
           selectedNodes.has(node)
@@ -153,10 +180,23 @@ const PathSelectGraph = ({ nodeMode }) => {
   }, []);
 
   return (
-    <div
-      ref={graphRef}
-      style={{ width: "100vw", height: "100vh", margin: 0 }}
-    />
+    <div ref={graphRef} style={{ width: "100vw", height: "100vh", margin: 0 }}>
+      {" "}
+      {hoverNode && !clickNode && (
+        <div
+          className="modal"
+          style={{
+            position: "absolute",
+            left: "68vw",
+            top: "20vh",
+            zIndex: 1000,
+            pointerEvents: "none", // Permite que o mouse passe por cima do modal
+          }}
+        >
+          <InfoBoard />
+        </div>
+      )}
+    </div>
   );
 };
 
