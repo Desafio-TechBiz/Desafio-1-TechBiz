@@ -7,7 +7,7 @@ import valueColor from "../../utils/valueColor";
 import * as THREE from "three";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
-
+import SpriteText from "three-spritetext";
 const PathSelectGraph = ({ nodeMode }) => {
   const graphRef = useRef();
 
@@ -17,14 +17,12 @@ const PathSelectGraph = ({ nodeMode }) => {
 
     const Graph = ForceGraph3D()(graphRef.current)
       .graphData(gData)
-      .nodeRelSize(9)
-      .nodeColor((node) => (selectedNodes.has(node) ? "yellow" : "grey"))
       .linkColor((link) =>
         selectedNodes.has(link.source) && selectedNodes.has(link.target)
           ? colors.purple
           : valueColor(link)
       ) // Highlight links
-      .linkOpacity(0.9)
+      .linkOpacity(0.6)
       .onNodeClick((node, event) => {
         if (event.ctrlKey || event.shiftKey || event.altKey) {
           // multi-selection
@@ -41,10 +39,33 @@ const PathSelectGraph = ({ nodeMode }) => {
         Graph.nodeColor(Graph.nodeColor()); // Update color of selected nodes
         Graph.linkColor(Graph.linkColor());
         Graph.linkWidth(Graph.linkWidth()); // Update color of links
+        Graph.nodeThreeObject(Graph.nodeThreeObject()); // Update sprites on selection
       })
       .linkWidth((link) =>
-        selectedNodes.has(link.source) && selectedNodes.has(link.target) ? 4 : 2
+        selectedNodes.has(link.source) && selectedNodes.has(link.target) ? 2 : 1
       )
+      .linkDirectionalParticles((link) =>
+        selectedNodes.has(link.source) && selectedNodes.has(link.target) ? 2 : 0
+      )
+      .linkDirectionalParticleWidth(4)
+      .linkThreeObjectExtend(true)
+      .linkThreeObject((link) => {
+        // extend link with text sprite
+        const sprite = new SpriteText(link.relationship);
+        sprite.color = "lightgrey";
+        sprite.textHeight = 1.5;
+        return sprite;
+      })
+      .linkPositionUpdate((sprite, { start, end }) => {
+        const middlePos = Object.assign(
+          ...["x", "y", "z"].map((c) => ({
+            [c]: start[c] + (end[c] - start[c]) / 2, // calc middle point
+          }))
+        );
+
+        // Position sprite
+        Object.assign(sprite.position, middlePos);
+      })
       .onNodeDrag((node, translate) => {
         if (selectedNodes.has(node)) {
           // moving a selected node
@@ -73,7 +94,7 @@ const PathSelectGraph = ({ nodeMode }) => {
     if (nodeMode === "basic") {
       Graph.nodeThreeObject((node) => {
         const nodeEl = document.createElement("div");
-        nodeEl.textContent = node.id;
+        nodeEl.textContent = node.name;
         nodeEl.style.color = "black";
         nodeEl.className = "node-label";
         nodeEl.style.fontSize = "12px";
@@ -82,7 +103,11 @@ const PathSelectGraph = ({ nodeMode }) => {
         nodeEl.style.userSelect = "none";
         nodeEl.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
         return new CSS2DObject(nodeEl);
-      }).nodeThreeObjectExtend(true);
+      })
+        .nodeThreeObjectExtend(true)
+        .nodeColor((node) =>
+          selectedNodes.has(node) ? colors.pink : colors.comment
+        );
     }
 
     if (nodeMode === "img") {
@@ -91,9 +116,30 @@ const PathSelectGraph = ({ nodeMode }) => {
           node.img_path ? node.img_path : "no_img.png"
         );
         imgTexture.colorSpace = THREE.SRGBColorSpace;
+
+        // Sprite for the image
         const material = new THREE.SpriteMaterial({ map: imgTexture });
         const sprite = new THREE.Sprite(material);
         sprite.scale.set(12, 12);
+
+        if (selectedNodes.has(node)) {
+          // Sprite for the border
+          const borderMaterial = new THREE.SpriteMaterial({
+            color: colors.purple, // Yellow border
+          });
+          const borderSprite = new THREE.Sprite(borderMaterial);
+          borderSprite.scale.set(14, 14); // Slightly larger than the image
+
+          // Ensure the border renders behind the image
+          borderSprite.renderOrder = 1;
+          sprite.renderOrder = 2;
+
+          const group = new THREE.Group();
+          group.add(borderSprite); // Add the border first
+          group.add(sprite); // Add the image on top of the border
+
+          return group;
+        }
 
         return sprite;
       });

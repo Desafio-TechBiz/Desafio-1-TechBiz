@@ -1,7 +1,7 @@
 import ForceGraph3D from "3d-force-graph";
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import SpriteText from 'three-spritetext';
+import SpriteText from "three-spritetext";
 import {
   CSS2DObject,
   CSS2DRenderer,
@@ -9,7 +9,6 @@ import {
 import fraudData from "../../data/fraud";
 import valueColor from "../../utils/valueColor";
 import "./Graph3D.css"; // Adicione aqui seu CSS personalizado para estilizar o modal
-
 
 const BaseGraph = ({ createNode, nodeMode }) => {
   const graphRef = useRef();
@@ -54,26 +53,21 @@ const BaseGraph = ({ createNode, nodeMode }) => {
       const highlightNodes = new Set();
       const highlightLinks = new Set();
       const gData = fraudData;
-
-      // cross-link node objects
-      gData.links.forEach((link) => {
-        const nodeMap = new Map(gData.nodes.map((node) => [node.id, node]));
-
-        const sourceNode = nodeMap.get(link.source);
-        const targetNode = nodeMap.get(link.target);
-        // Inicializa o atributo neighbors para cada nó
-        gData.nodes.forEach((node) => {
-          node.links = [];
-          node.neighbors = [];
-        });
-
-        if (sourceNode && targetNode) {
-          sourceNode.neighbors.push(targetNode);
-          targetNode.neighbors.push(sourceNode);
-          sourceNode.links.push(targetNode);
-          targetNode.links.push(sourceNode);
-        }
+      
+      gData.links.forEach(link => {
+        const a = gData.nodes[link.source];
+        const b = gData.nodes[link.target];
+        !a.neighbors && (a.neighbors = []);
+        !b.neighbors && (b.neighbors = []);
+        a.neighbors.push(b);
+        b.neighbors.push(a);
+  
+        !a.links && (a.links = []);
+        !b.links && (b.links = []);
+        a.links.push(link);
+        b.links.push(link);
       });
+  
 
       const Graph = ForceGraph3D({
         extraRenderers: [new CSS2DRenderer()],
@@ -113,18 +107,23 @@ const BaseGraph = ({ createNode, nodeMode }) => {
         )
         .linkColor(valueColor)
         .linkOpacity(0.6)
-        .linkWidth((link) => (highlightLinks.has(link) ? 4 : 1))
-        .linkDirectionalParticles((link) => (highlightLinks.has(link) ? 4 : 0))
-        .linkDirectionalParticleWidth(4)
+        .linkWidth((link) => (highlightLinks.has(link) ? 2 : 1))
+        .linkDirectionalParticles((link) => (highlightLinks.has(link) ? 2 : 0))
+        .linkDirectionalParticleWidth(2)
         .onNodeHover((node) => {
           // Update hover state
+          console.log(node);
 
           if (node) {
             highlightNodes.clear();
             highlightLinks.clear();
             highlightNodes.add(node);
-            console.log(node);
-            node.neighbors.forEach((neighbor) => highlightNodes.add(neighbor));
+
+            node.neighbors.forEach((neighbor) =>
+              highlightNodes.add(
+                gData.nodes.find((node) => node.id === neighbor)
+              )
+            );
             node.links.forEach((link) => highlightLinks.add(link));
 
             // Update modal position
@@ -174,7 +173,7 @@ const BaseGraph = ({ createNode, nodeMode }) => {
       if (nodeMode === "basic") {
         Graph.nodeThreeObject((node) => {
           const nodeEl = document.createElement("div");
-          nodeEl.textContent = node.id;
+          nodeEl.textContent = node.name;
           nodeEl.style.color = "black";
           nodeEl.className = "node-label";
           nodeEl.style.fontSize = "12px";
