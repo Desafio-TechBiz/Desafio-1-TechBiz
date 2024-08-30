@@ -3,6 +3,7 @@ import * as S from './styles';
 import * as Icons from '../../assets/image';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleButton } from '../../../store/Slices/menuSlice.js';
+import BurstModeIcon from '@mui/icons-material/BurstMode';
 const FloatingButtons = () => {
   const [showMenu, setShowMenu] = React.useState(false);
   const [showRoute, setShowRoute] = React.useState(false);
@@ -28,6 +29,9 @@ const FloatingButtons = () => {
   return (
     <>
       <S.FloatingButtonContainer>
+      <S.FloatingButton style={{marginBottom: '20px', backgroundColor: 'rgba(140, 140, 191, 1)'}} onClick={() => handleButtonClick('changeGraphMode')}>
+          <BurstModeIcon/>
+        </S.FloatingButton>
         <S.ButtonRow>
           <S.FloatingButton onClick={() => handleButtonClick('target')}>
             <img src={Icons.TargetIcon} alt="Target" />
@@ -38,6 +42,7 @@ const FloatingButtons = () => {
             </S.FloatingButtonTarget>
           )}
         </S.ButtonRow>
+        
         <S.FloatingButton onClick={() => handleButtonClick('filter')}>
           <img src={Icons.FilterIcon} alt="Filter" />
         </S.FloatingButton>

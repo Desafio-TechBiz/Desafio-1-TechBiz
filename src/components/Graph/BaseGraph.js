@@ -27,6 +27,7 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
 
   const createTransform = button.createTransform;
   const createNewNode = button.createNode;
+  const changeGraphMode = button.changeGraphMode;
 
   const staticNode = {
     id: 0,
@@ -38,60 +39,60 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
   };
 
   const staticTransfrom = {
-    "nodes": [
+    nodes: [
       {
-        "id": 0,
-        "type": "empresa",
-        "name": "TechCorp",
-        "role": "Empresa Envolvida",
-        "img_path": "/imgs/techcorp.jpg",
-        "neighbors": []
+        id: 0,
+        type: "empresa",
+        name: "TechCorp",
+        role: "Empresa Envolvida",
+        img_path: "/imgs/techcorp.jpg",
+        neighbors: [],
       },
       {
-        "id": 1,
-        "type": "pessoa",
-        "name": "Alice Smith",
-        "role": "Suspeita",
-        "img_path": "/imgs/alice_smith.jpg",
-        "neighbors": []
+        id: 1,
+        type: "pessoa",
+        name: "Alice Smith",
+        role: "Suspeita",
+        img_path: "/imgs/alice_smith.jpg",
+        neighbors: [],
       },
       {
-        "id": 2,
-        "type": "pessoa",
-        "name": "Clara Adams",
-        "role": "Contadora",
-        "img_path": "/imgs/clara_adams.jpg",
-        "neighbors": []
+        id: 2,
+        type: "pessoa",
+        name: "Clara Adams",
+        role: "Contadora",
+        img_path: "/imgs/clara_adams.jpg",
+        neighbors: [],
       },
       {
-        "id": 3,
-        "type": "pessoa",
-        "name": "Carlos Silva",
-        "role": "Gerente de Projetos",
-        "img_path": "/imgs/carlos_silva.jpg",
-        "neighbors": []
-      }
+        id: 3,
+        type: "pessoa",
+        name: "Carlos Silva",
+        role: "Gerente de Projetos",
+        img_path: "/imgs/carlos_silva.jpg",
+        neighbors: [],
+      },
     ],
-    "links": [
+    links: [
       {
-        "source": 1,
-        "target": 0,
-        "relationship": "Associada a",
-        "value": 9
+        source: 1,
+        target: 0,
+        relationship: "Associada a",
+        value: 9,
       },
       {
-        "source": 0,
-        "target": 2,
-        "relationship": "Responsável pelas Finanças de",
-        "value": 7
+        source: 0,
+        target: 2,
+        relationship: "Responsável pelas Finanças de",
+        value: 7,
       },
       {
-        "source": 0,
-        "target": 3,
-        "relationship": "Gerencia Projetos em",
-        "value": 6
-      }
-    ]
+        source: 0,
+        target: 3,
+        relationship: "Gerencia Projetos em",
+        value: 6,
+      },
+    ],
   };
 
   const handleMouseMove = (event) => {
@@ -128,6 +129,10 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
 
         // Atualiza o grafo com o novo nó
         Graph.graphData(newTransform);
+      };
+
+      const addAllTransformsInvestigation = () => {
+        Graph.graphData(fraudData);
       };
 
       const removeNode = (node) => {
@@ -200,6 +205,7 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
               : "rgba(255,160,0,0.8)"
             : "rgba(0,255,255,0.6)"
         )
+        .onBackgroundRightClick(() => addAllTransformsInvestigation())
         .linkColor(valueColor)
         .linkOpacity(0.6)
         .linkWidth((link) => (highlightLinks.has(link) ? 2 : 1))
@@ -270,7 +276,7 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
           Object.assign(sprite.position, middlePos);
         });
 
-      if (nodeModeValue === "basic") {
+      if (button.changeGraphMode) {
         Graph.nodeThreeObject((node) => {
           const nodeEl = document.createElement("div");
           nodeEl.textContent = node.name;
@@ -283,9 +289,7 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
           nodeEl.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
           return new CSS2DObject(nodeEl);
         }).nodeThreeObjectExtend(true);
-      }
-
-      if (nodeModeValue === "img") {
+      } else {
         Graph.nodeThreeObject((node) => {
           const imgTexture = new THREE.TextureLoader().load(
             node.img_path ? node.img_path : "no_img.png"
@@ -321,7 +325,7 @@ const BaseGraph = ({ createNodeValue, nodeModeValue }) => {
     // if(closeTransform){
     //   setClickNode(false)
     // }
-  }, [newNode, createTransform, createNewNode]);
+  }, [newNode, createTransform, createNewNode, changeGraphMode]);
 
   return (
     <div onMouseMove={handleMouseMove}>
