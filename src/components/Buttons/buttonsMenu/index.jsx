@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as S from './styles';  
 import * as Icons from '../../assets/image';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleButton } from '../../../store/Slices/menuSlice.js';
+
 const FloatingButtons = () => {
   const [showMenu, setShowMenu] = React.useState(false);
   const [showRoute, setShowRoute] = React.useState(false);
   const [showDownload, setShowDownload] = React.useState(false);
+  const [activeButton, setActiveButton] = useState(null);
   const dispatch = useDispatch();
 
   const handleButtonClick = (button) => {
@@ -23,34 +25,40 @@ const FloatingButtons = () => {
     if (button === 'target') {
       setShowDownload(!showDownload); 
     }
+
+    setActiveButton(activeButton === button ? null : button);
   };
 
   return (
     <>
       <S.FloatingButtonContainer>
         <S.ButtonRow>
-          <S.FloatingButton onClick={() => handleButtonClick('target')}>
+          <S.FloatingButton 
+            onClick={() => handleButtonClick('target')} 
+            isActive={activeButton === 'target'}>
             <img src={Icons.TargetIcon} alt="Target" />
           </S.FloatingButton>
           {showDownload && ( 
-            <S.FloatingButtonTarget onClick={() => handleButtonClick('download')}>
+            <S.FloatingButtonTarget 
+            onClick={() => handleButtonClick('download')}
+            isActive={activeButton === 'download'}>
               <img src={Icons.DownloadIcon} alt="Download" />
             </S.FloatingButtonTarget>
           )}
         </S.ButtonRow>
-        <S.FloatingButton onClick={() => handleButtonClick('filter')}>
+        <S.FloatingButton 
+        onClick={() => handleButtonClick('filter')}
+        isActive={activeButton === 'filter'}>
           <img src={Icons.FilterIcon} alt="Filter" />
         </S.FloatingButton>
-        <S.FloatingButton onClick={() => handleButtonClick('route')}>
+        <S.FloatingButton 
+        onClick={() => handleButtonClick('route')}
+        isActive={activeButton === 'route'}>
           <img src={Icons.RouteIcon} alt="Route" />
         </S.FloatingButton>
-        <S.FloatingButton onClick={() => handleButtonClick('zoomIn')}>
-          <img src={Icons.ZoomInIcon} alt="Zoom In" />
-        </S.FloatingButton>
-        <S.FloatingButton onClick={() => handleButtonClick('zoomOut')}>
-          <img src={Icons.ZoomOutIcon} alt="Zoom Out" />
-        </S.FloatingButton>
-        <S.FloatingButton onClick={() => handleButtonClick('expand')}>
+        <S.FloatingButton 
+        onClick={() => handleButtonClick('expand')}
+        isActive={activeButton === 'expand'}>
           <img src={Icons.ExpandIcon} alt="Expand" />
         </S.FloatingButton>
       </S.FloatingButtonContainer>
