@@ -30,5 +30,31 @@ Propomos uma ferramenta inovadora para análise de vínculos, com o objetivo de 
 
 **Interação usando Linguagem Natural:** O assistente interage com o usuário em linguagem natural, respondendo a perguntas sobre a Entidade investigada, como "Quais são as conexões mais fortes desta pessoa?" ou "Que outros indivíduos estão envolvidos em atividades semelhantes?".
 
-## Conclusão
-A nossa ferramenta de visualização inteligente de dados para análise de vínculos representa um avanço significativo na forma como os investigadores interagem com dados complexos. Ao combinar uma interface visual dinâmica e adaptativa com menus contextuais inteligentes e um assistente virtual investigador, proporcionamos uma experiência de investigação mais intuitiva e eficiente. 
+## Rodando a aplicação
+
+1. **Instalar o Node.js** (se ainda não estiver instalado):
+   - No macOS e Linux, você pode usar o gerenciador de pacotes `nvm`:
+     ```bash
+     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+     nvm install node
+     ```
+   - No Windows, baixe o instalador no site oficial: [Node.js Downloads](https://nodejs.org/).
+
+2. **Instalar as dependências**:
+   ```bash
+   yarn install
+   ```
+
+3. **Iniciar a aplicação**:
+   ```bash
+   yarn start
+   ```
+## Prints
+
+![Screenshot from 2024-09-04 23-08-35](https://github.com/user-attachments/assets/c91e2114-57f9-48ef-b33e-ee99b9bf8cc0)
+![Screenshot from 2024-09-04 23-08-56](https://github.com/user-attachments/assets/6a093c74-fbd0-41fe-bfaf-83a9201d7042)
+![Screenshot from 2024-09-04 23-12-49](https://github.com/user-attachments/assets/8b051685-ea2e-446d-bf33-5e7857af4b17)
+![Screenshot from 2024-09-04 23-10-05](https://github.com/user-attachments/assets/ec974d0d-8d99-41a3-856c-4996ff34ad57)
+
+
+
